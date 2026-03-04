@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wild Imaginations 3D - Improved Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #212121;
+            --secondary-pink: #ff63bb;
+            --accent-purple: #ee25bc;
+            --light-gray: #f8f9fa;
+            --medium-gray: #6c757d;
+            --white: #ffffff;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--primary-dark);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: var(--white);
+            box-shadow: 0 2px 20px var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+        }
+
+        .logo:hover {
+            opacity: 0.85;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--secondary-pink), var(--accent-purple));
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 0.25rem;
+            cursor: pointer;
+        }
+
+        .mobile-menu span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary-dark);
+            transition: var(--transition);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .hero-content {
+            flex: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--medium-gray);
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-pink), var(--accent-purple));
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(238, 37, 188, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(238, 37, 188, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-dark);
+            border: 2px solid var(--primary-dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInRight 0.8s ease-out;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 500px;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px var(--shadow-medium);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary-dark);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px var(--shadow-light);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px var(--shadow-medium);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--secondary-pink), var(--accent-purple));
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .feature-card p {
+            color: var(--medium-gray);
+            line-height: 1.6;
+        }
+
+        /* Categories Section */
+        .categories {
+            padding: 4rem 2rem;
+            background: var(--white);
+        }
+
+        .categories-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, var(--light-gray), var(--white));
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .category-card:hover {
+            border-color: var(--secondary-pink);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px var(--shadow-light);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-card p {
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+        }
+
+        /* About Section */
+        .about {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .about-text p {
+            color: var(--medium-gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .about-image {
+            height: 400px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Color Gallery */
+        .color-gallery {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .color-swatch {
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .color-swatch:hover {
+            transform: translateY(-3px);
+        }
+
+        .color-swatch img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            box-shadow: 0 3px 10px var(--shadow-light);
+        }
+
+        .color-swatch p {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--medium-gray);
+            font-weight: 500;
+        }
+
+        /* Footer logo */
+        .footer-logo {
+            height: 40px;
+            width: auto;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: var(--white);
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--secondary-pink);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: var(--secondary-pink);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: flex;
+            }
+
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem 1rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                justify-content: center;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#" class="logo"><img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/8.26.2024_66cbde82f08154.98464417.png" alt="Wild Imaginations 3D"></a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="admin.html" style="background:linear-gradient(135deg,var(--secondary-pink),var(--accent-purple));color:#fff;padding:0.5rem 1rem;border-radius:8px;font-size:0.85rem;">Admin</a></li>
+            </ul>
+            <div class="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1>Bring Your Imagination to Life with 3D Printing</h1>
+                <p>Specializing in cosplay pieces, educational toys, and custom designs using eco-friendly PLA+ materials. Quality craftsmanship meets creative innovation.</p>
+                <div class="cta-buttons">
+                    <a href="#shop" class="btn btn-primary">🛍️ Shop Now</a>
+                    <a href="#contact" class="btn btn-secondary">📧 Get in Touch</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/GroupAnn%20Image1%20V2_1728514393.jpg" alt="Wild Imaginations 3D Cosplay Creations">
+            </div>
+        </section>
+
+        <section class="features">
+            <h2 class="section-title">Why Choose Wild Imaginations 3D?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3>Eco-Friendly Materials</h3>
+                    <p>We exclusively use high-grade, environmentally friendly PLA+ materials that are kind to the planet while delivering vibrant, durable results.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3>Expert Cosplay Craftsmanship</h3>
+                    <p>Specializing in stunning cosplay pieces that help fans embody their favorite characters with attention to detail and quality.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Educational & Sensory Toys</h3>
+                    <p>Creating engaging sensory and educational toys designed to enrich learning experiences for children of all ages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📜</div>
+                    <h3>Commercially Licensed</h3>
+                    <p>We hold all necessary commercial licenses for our products, ensuring authenticity and legal compliance in everything we sell.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Husband & Wife Team</h3>
+                    <p>A dedicated team bringing years of experience and passion for 3D printing and design to every project we undertake.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3>Custom Designs</h3>
+                    <p>From officially licensed designs to unique custom creations, we bring your ideas to life with precision and creativity.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories" id="categories">
+            <div class="categories-container">
+                <h2 class="section-title">Explore Our Categories</h2>
+                <div class="category-grid">
+                    <div class="category-card">
+                        <div class="category-icon">🎭</div>
+                        <h4>Cosplay</h4>
+                        <p>Props, accessories, and costume pieces</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">🐉</div>
+                        <h4>D&D Miniatures</h4>
+                        <p>Detailed figurines and terrain</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">🧸</div>
+                        <h4>Educational Toys</h4>
+                        <p>Sensory play and learning tools</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">🎨</div>
+                        <h4>Hobby Supplies</h4>
+                        <p>Paints, tools, and accessories</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">⚔️</div>
+                        <h4>Weapons & Props</h4>
+                        <p>Replicas and detailed props</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">🎮</div>
+                        <h4>Gaming Accessories</h4>
+                        <p>Custom gaming items</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">🏰</div>
+                        <h4>Wargaming Terrain</h4>
+                        <p>Battle-ready terrain pieces</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">🦸</div>
+                        <h4>Printlings</h4>
+                        <p>Character collectibles</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about" id="about">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Our Story</h2>
+                    <p>At Wild Imaginations 3D, we are a husband and wife team dedicated to bringing creativity and innovation to life through 3D printing and design. With years of experience, we specialize in creating stunning cosplay pieces and educational toys that enrich learning experiences.</p>
+                    <p>We take great pride in using exclusively high-grade, environmentally friendly PLA+ materials, ensuring our creations are vibrant, durable, and kind to the planet. Our commitment to quality extends to holding all necessary commercial licenses for everything we sell.</p>
+                    <p>Whether you're looking for the perfect cosplay accessory or engaging educational toys, you'll find something special in our collection. Join us on this exciting journey of imagination and creativity!</p>
+                </div>
+                <div class="about-image">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/2024-10-14_14-05-01_1728878732.jpg" alt="Wild Imaginations 3D Workshop">
+                </div>
+            </div>
+        </section>
+        <section class="color-gallery" id="colours">
+            <h2 class="section-title">Our PLA Colour Range</h2>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Hot%20Pink%20PLA_1742027904.jpg" alt="Hot Pink PLA">
+                    <p>Hot Pink</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Cobalt%20Blue%20PLA_1742027904.jpg" alt="Cobalt Blue PLA">
+                    <p>Cobalt Blue</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Gold%20PLA_1742027905.png" alt="Gold PLA">
+                    <p>Gold</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Indigo%20Purple%20PLA_1742027904.jpg" alt="Indigo Purple PLA">
+                    <p>Indigo Purple</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Jade%20White%20PLA_1742027821.jpg" alt="Jade White PLA">
+                    <p>Jade White</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Red%20PLA_1742027906.jpg" alt="Red PLA">
+                    <p>Red</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Bronze%20PLA_1742027904.jpg" alt="Bronze PLA">
+                    <p>Bronze</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Cyan%20PLA_1742027904.jpg" alt="Cyan PLA">
+                    <p>Cyan</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Bambu%20Green%20PLA_1742027904.jpg" alt="Bambu Green PLA">
+                    <p>Bambu Green</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Silver%20PLA_1742032144.jpg" alt="Silver PLA">
+                    <p>Silver</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Magenta%20PLA_1742027905.jpg" alt="Magenta PLA">
+                    <p>Magenta</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Matte%20Sakura%20Pink%20PLA_1742027905.jpg" alt="Matte Sakura Pink PLA">
+                    <p>Sakura Pink</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Orange%20PLA_1742027906.jpg" alt="Orange PLA">
+                    <p>Orange</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Turquoise%20PLA_1742032049.jpg" alt="Turquoise PLA">
+                    <p>Turquoise</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Black%20PLA_1742027904.jpg" alt="Black PLA">
+                    <p>Black</p>
+                </div>
+                <div class="color-swatch">
+                    <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Matte%20Lilac%20Purple%20PLA_1742027906.jpg" alt="Matte Lilac Purple PLA">
+                    <p>Lilac Purple</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/8.26.2024_66cbde82f08154.98464417.png" alt="Wild Imaginations 3D" class="footer-logo">
+                <h3>Shop</h3>
+                <ul>
+                    <li><a href="#">All Products</a></li>
+                    <li><a href="#">Cosplay Items</a></li>
+                    <li><a href="#">Educational Toys</a></li>
+                    <li><a href="#">D&D Miniatures</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="#">New Arrivals</a></li>
+                    <li><a href="#">Best Sellers</a></li>
+                    <li><a href="#">Custom Orders</a></li>
+                    <li><a href="#">Gift Ideas</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Shipping Info</a></li>
+                    <li><a href="#">Returns</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <ul>
+                    <li><a href="https://www.facebook.com/profile.php?id=61559911828986" target="_blank">Facebook</a></li>
+                    <li><a href="https://www.instagram.com/wildimaginations3d" target="_blank">Instagram</a></li>
+                    <li><a href="mailto:wildimaginations3dd@gmail.com">Email Us</a></li>
+                    <li><a href="#">Newsletter</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Wild Imaginations 3D. All rights reserved. | Eco-friendly 3D printing solutions</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        
+        mobileMenu.addEventListener('click', () => {
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            navLinks.style.position = 'absolute';
+            navLinks.style.top = '100%';
+            navLinks.style.left = '0';
+            navLinks.style.right = '0';
+            navLinks.style.background = 'white';
+            navLinks.style.flexDirection = 'column';
+            navLinks.style.padding = '1rem';
+            navLinks.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            }
+        });
+    </script>
+</body>
+</html>

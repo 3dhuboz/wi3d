@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wild Imaginations 3D — Social Media Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #ee25bc;
+            --primary-light: #ff63bb;
+            --primary-glow: rgba(238, 37, 188, 0.3);
+            --bg-dark: #0f0a1a;
+            --bg-surface: rgba(255,255,255,0.05);
+            --bg-surface-hover: rgba(255,255,255,0.08);
+            --border: rgba(255,255,255,0.1);
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --blue: #60a5fa;
+            --pink: #f472b6;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f0a1a 0%, #1a0a2e 50%, #0f0a1a 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .header-brand img { height: 40px; width: auto; }
+        .header-brand h1 { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .header-brand p { font-size: 0.7rem; color: var(--primary-light); }
+        .header-status { font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status-dot.active { background: var(--success); box-shadow: 0 0 6px var(--success); }
+        .status-dot.inactive { background: var(--warning); }
+        .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.8rem; margin-right: 1.5rem; transition: color 0.2s; }
+        .back-link:hover { color: var(--primary-light); }
+
+        /* Tab Nav */
+        .tab-nav {
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.15);
+            position: sticky;
+            top: 73px;
+            z-index: 30;
+        }
+        .tab-nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active { color: var(--primary-light); border-bottom-color: var(--primary-light); }
+        .tab-btn svg { width: 16px; height: 16px; }
+
+        /* Main */
+        .main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Cards */
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: #fff; }
+        .card-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title svg { color: var(--primary-light); }
+
+        /* Form Elements */
+        label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+        input, textarea, select {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
+        textarea { resize: vertical; min-height: 80px; }
+        select option { background: #1a1a2e; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .btn svg { width: 16px; height: 16px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--primary-glow); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: rgba(99, 102, 241, 0.8); color: #fff; }
+        .btn-secondary:hover { background: rgba(99, 102, 241, 1); }
+        .btn-success { background: rgba(16, 185, 129, 0.8); color: #fff; }
+        .btn-success:hover { background: rgba(16, 185, 129, 1); }
+        .btn-danger { background: rgba(185, 28, 28, 0.5); color: #fca5a5; }
+        .btn-danger:hover { background: rgba(185, 28, 28, 0.8); }
+        .btn-ghost { background: rgba(75, 85, 99, 0.5); color: #fff; }
+        .btn-ghost:hover { background: rgba(75, 85, 99, 0.8); }
+        .btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+        /* Post Cards */
+        .post-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .post-card-body { flex: 1; min-width: 0; }
+        .post-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+        .platform-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+        .platform-fb { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+        .platform-ig { background: rgba(244, 114, 182, 0.2); color: var(--pink); }
+        .status-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 999px; }
+        .status-draft { background: rgba(75, 85, 99, 0.5); color: var(--text-muted); }
+        .status-scheduled { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+        .status-posted { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .post-content { font-size: 0.85rem; color: #d1d5db; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .post-hashtags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+        .post-hashtag { font-size: 0.65rem; color: var(--primary-light); }
+        .post-date { font-size: 0.7rem; color: var(--text-dim); }
+        .post-pillar { font-size: 0.6rem; background: rgba(139, 92, 246, 0.2); color: #c084fc; padding: 2px 6px; border-radius: 4px; }
+        .post-delete { background: none; border: none; color: var(--error); cursor: pointer; padding: 8px; opacity: 0.6; transition: opacity 0.2s; flex-shrink: 0; }
+        .post-delete:hover { opacity: 1; }
+        .post-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+
+        /* Generated Output */
+        .output-box { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1rem; color: #e5e7eb; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6; }
+        .hashtag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.75rem; }
+        .hashtag-pill { font-size: 0.75rem; background: rgba(238, 37, 188, 0.15); color: var(--primary-light); padding: 4px 10px; border-radius: 999px; }
+        .generated-img { max-width: 320px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-top: 0.75rem; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+        .stats-grid input { text-align: center; }
+
+        /* Strategy Box */
+        .strategy-box { background: rgba(238, 37, 188, 0.08); border: 1px solid rgba(238, 37, 188, 0.25); border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+        .strategy-box h4 { font-size: 0.85rem; color: var(--primary-light); margin-bottom: 6px; }
+        .strategy-box p { font-size: 0.85rem; color: #d1d5db; }
+
+        /* Smart posts accept bar */
+        .accept-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .accept-bar h3 { font-weight: 700; }
+
+        /* Reasoning */
+        .reasoning { font-size: 0.75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; }
+
+        /* Insights output */
+        .insights-output { font-size: 0.9rem; color: #d1d5db; white-space: pre-wrap; line-height: 1.7; }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-dim); }
+        .empty-state svg { opacity: 0.3; margin-bottom: 1rem; }
+        .empty-state p { font-size: 0.9rem; }
+
+        /* Toast */
+        .toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 100; display: flex; flex-direction: column; gap: 8px; max-width: 350px; }
+        .toast {
+            display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 8px;
+            border: 1px solid; color: #fff; font-size: 0.85rem; box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease-out;
+        }
+        .toast-success { background: rgba(6, 78, 59, 0.9); border-color: var(--success); }
+        .toast-error { background: rgba(127, 29, 29, 0.9); border-color: var(--error); }
+        .toast-warning { background: rgba(120, 53, 15, 0.9); border-color: var(--warning); }
+        .toast-close { background: none; border: none; color: #fff; opacity: 0.5; cursor: pointer; margin-left: auto; }
+        .toast-close:hover { opacity: 1; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* Spinner */
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .header-inner { padding: 0.75rem 1rem; }
+            .main { padding: 1.5rem 1rem; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="header">
+    <div class="header-inner">
+        <div style="display:flex;align-items:center;">
+            <a href="improved-layout-design.html" class="back-link">← Back to Site</a>
+            <a href="#" class="header-brand">
+                <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/8.26.2024_66cbde82f08154.98464417.png" alt="Wild Imaginations 3D">
+                <div>
+                    <h1>Social Media Admin</h1>
+                    <p>Wild Imaginations 3D</p>
+                </div>
+            </a>
+        </div>
+        <div class="header-status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">No API Key</span>
+        </div>
+    </div>
+</header>
+
+<!-- ═══════════ TAB NAV ═══════════ -->
+<nav class="tab-nav">
+    <div class="tab-nav-inner">
+        <button class="tab-btn active" data-tab="create">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4V2m0 2v2m0-2h2m-2 0h-2"/><path d="M8.5 14.5 11 12"/><path d="m14 7-5.5 5.5a2.1 2.1 0 1 0 3 3L17 10"/><path d="m14 7 3 3"/><path d="M9.5 16.5 4 22"/></svg>
+            Create
+        </button>
+        <button class="tab-btn" data-tab="calendar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Calendar
+        </button>
+        <button class="tab-btn" data-tab="smart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></svg>
+            Smart AI
+        </button>
+        <button class="tab-btn" data-tab="insights">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+            Insights
+        </button>
+        <button class="tab-btn" data-tab="settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Settings
+        </button>
+    </div>
+</nav>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<div class="main">
+
+    <!-- ══ CREATE TAB ══ -->
+    <div class="tab-panel active" id="panel-create">
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4V2m0 2v2m0-2h2m-2 0h-2"/><path d="M8.5 14.5 11 12"/><path d="m14 7-5.5 5.5a2.1 2.1 0 1 0 3 3L17 10"/><path d="m14 7 3 3"/><path d="M9.5 16.5 4 22"/></svg>
+            AI Content Generator
+        </h2>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="topic">Topic / Prompt</label>
+                <textarea id="topic" placeholder="e.g., New cosplay pieces in stock, PLA colour showcase, behind the scenes 3D printing..."></textarea>
+            </div>
+            <div class="btn-row">
+                <select id="platform" style="width:auto;">
+                    <option value="Instagram">Instagram</option>
+                    <option value="Facebook">Facebook</option>
+                </select>
+                <button class="btn btn-primary" onclick="handleGenerate()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4V2m0 2v2m0-2h2m-2 0h-2"/><path d="m14 7-5.5 5.5a2.1 2.1 0 1 0 3 3L17 10"/><path d="m14 7 3 3"/></svg>
+                    Generate Text
+                </button>
+                <button class="btn btn-secondary" onclick="handleGenerateImage()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    Image
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="outputCard" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+                <h3 id="outputPlatformLabel" style="margin:0;">Generated Post</h3>
+            </div>
+            <div class="output-box" id="outputContent"></div>
+            <div class="hashtag-row" id="outputHashtags"></div>
+            <img id="outputImage" class="generated-img" style="display:none;" alt="Generated">
+            <div style="margin-top:1rem;" class="btn-row">
+                <div>
+                    <label for="scheduleDate">Schedule (optional)</label>
+                    <input type="datetime-local" id="scheduleDate" style="width:auto;">
+                </div>
+                <button class="btn btn-success" onclick="handleSavePost()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+                    <span id="saveLabel">Save Draft</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CALENDAR TAB ══ -->
+    <div class="tab-panel" id="panel-calendar">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+            <h2 class="section-title" style="margin:0;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                Content Calendar
+            </h2>
+            <span id="postCount" style="font-size:0.85rem;color:var(--text-muted);"></span>
+        </div>
+        <div id="calendarList"></div>
+    </div>
+
+    <!-- ══ SMART AI TAB ══ -->
+    <div class="tab-panel" id="panel-smart">
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg>
+            Smart AI Scheduler
+        </h2>
+        <p style="color:var(--text-muted);margin-bottom:1.5rem;">Let AI plan your entire content calendar for the next 2 weeks — optimized for engagement, timing, and variety.</p>
+
+        <div class="card">
+            <div class="btn-row">
+                <div>
+                    <label for="smartCount">Posts to Generate</label>
+                    <select id="smartCount" style="width:auto;">
+                        <option value="5">5 posts</option>
+                        <option value="7" selected>7 posts</option>
+                        <option value="10">10 posts</option>
+                        <option value="14">14 posts</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="handleSmartSchedule()" style="margin-top:18px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    Generate Schedule
+                </button>
+            </div>
+            <div id="smartStrategy"></div>
+        </div>
+        <div id="smartPostsList"></div>
+    </div>
+
+    <!-- ══ INSIGHTS TAB ══ -->
+    <div class="tab-panel" id="panel-insights">
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+            AI Insights
+        </h2>
+
+        <div class="card">
+            <h3>Your Stats</h3>
+            <div class="stats-grid">
+                <div>
+                    <label for="statFollowers">Followers</label>
+                    <input type="number" id="statFollowers" value="500">
+                </div>
+                <div>
+                    <label for="statReach">Monthly Reach</label>
+                    <input type="number" id="statReach" value="2000">
+                </div>
+                <div>
+                    <label for="statEngagement">Engagement %</label>
+                    <input type="number" id="statEngagement" value="4.5" step="0.1">
+                </div>
+                <div>
+                    <label for="statPosts">Posts (30d)</label>
+                    <input type="number" id="statPosts" value="8">
+                </div>
+            </div>
+            <div style="margin-top:1rem;">
+                <button class="btn btn-primary" onclick="handleAnalyze()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+                    Analyze & Recommend
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="recCard" style="display:none;">
+            <h3 style="color:var(--primary-light);">Recommendations</h3>
+            <div class="insights-output" id="recOutput"></div>
+        </div>
+        <div class="card" id="timesCard" style="display:none;">
+            <h3 style="color:var(--primary-light);">Best Posting Times</h3>
+            <div class="insights-output" id="timesOutput"></div>
+        </div>
+    </div>
+
+    <!-- ══ SETTINGS TAB ══ -->
+    <div class="tab-panel" id="panel-settings">
+        <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Settings
+        </h2>
+
+        <!-- API Key -->
+        <div class="card">
+            <h3>Gemini API Key</h3>
+            <p class="card-subtitle">Powers all AI features. Get a free key from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--primary-light);">Google AI Studio</a>.</p>
+            <div class="btn-row">
+                <input type="password" id="apiKeyInput" placeholder="Paste your Gemini API key..." style="max-width:400px;">
+                <button class="btn btn-primary" onclick="saveApiKey()">Save</button>
+            </div>
+            <p id="apiKeyStatus" style="font-size:0.75rem;margin-top:8px;"></p>
+        </div>
+
+        <!-- Business Profile -->
+        <div class="card">
+            <h3>Business Profile</h3>
+            <p class="card-subtitle">AI uses this to tailor content to your brand.</p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="profName">Business Name</label>
+                    <input id="profName" value="Wild Imaginations 3D">
+                </div>
+                <div class="form-group">
+                    <label for="profType">Business Type</label>
+                    <input id="profType" value="3D printing & design studio">
+                </div>
+                <div class="form-group">
+                    <label for="profLocation">Location</label>
+                    <input id="profLocation" value="Australia">
+                </div>
+                <div class="form-group">
+                    <label for="profTone">Tone / Voice</label>
+                    <input id="profTone" value="Friendly, creative, and passionate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="profDesc">Business Description</label>
+                <textarea id="profDesc">A husband and wife team dedicated to bringing creativity and innovation to life through 3D printing. Specializing in cosplay pieces, educational toys, D&amp;D miniatures, and custom designs using eco-friendly PLA+ materials. All products are commercially licensed.</textarea>
+            </div>
+        </div>
+
+        <!-- Social Accounts -->
+        <div class="card">
+            <h3>Connected Social Accounts</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="fbPageId">Facebook Page ID</label>
+                    <input id="fbPageId" value="61559911828986">
+                </div>
+                <div class="form-group">
+                    <label for="fbPageUrl">Facebook Page URL</label>
+                    <input id="fbPageUrl" value="https://www.facebook.com/profile.php?id=61559911828986" readonly style="opacity:0.7;">
+                </div>
+                <div class="form-group">
+                    <label for="igAccount">Instagram Handle</label>
+                    <input id="igAccount" value="wildimaginations3d">
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Contact Email</label>
+                    <input id="contactEmail" value="wildimaginations3dd@gmail.com">
+                </div>
+            </div>
+        </div>
+
+        <!-- Data -->
+        <div class="card">
+            <h3>Data</h3>
+            <div class="btn-row">
+                <button class="btn btn-ghost" onclick="exportData()">Export All Data</button>
+                <button class="btn btn-danger" onclick="clearAllPosts()">Clear All Posts</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let posts = JSON.parse(localStorage.getItem('wi3d_posts') || '[]');
+let smartPosts = [];
+let generatedContent = '';
+let generatedHashtags = [];
+let generatedImage = null;
+
+// ══════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════
+function toast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `<span>${message}</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+}
+
+// ══════════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+});
+
+// ══════════════════════════════════════════════════════
+// API KEY
+// ══════════════════════════════════════════════════════
+function getApiKey() { return localStorage.getItem('wi3d_gemini_key') || ''; }
+function hasApiKey() { return !!getApiKey(); }
+
+function saveApiKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) { toast('Enter an API key.', 'warning'); return; }
+    localStorage.setItem('wi3d_gemini_key', key);
+    toast('API Key saved! AI features are now active.');
+    updateApiStatus();
+}
+
+function updateApiStatus() {
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    const statusEl = document.getElementById('apiKeyStatus');
+    if (hasApiKey()) {
+        dot.className = 'status-dot active';
+        text.textContent = 'AI Active';
+        text.style.color = 'var(--success)';
+        if (statusEl) statusEl.innerHTML = '<span style="color:var(--success);">✓ Key configured</span>';
+        const input = document.getElementById('apiKeyInput');
+        if (input && !input.value) input.value = '••••••••••••';
+    } else {
+        dot.className = 'status-dot inactive';
+        text.textContent = 'No API Key';
+        text.style.color = 'var(--warning)';
+        if (statusEl) statusEl.textContent = '';
+    }
+}
+
+// ══════════════════════════════════════════════════════
+// PROFILE HELPERS
+// ══════════════════════════════════════════════════════
+function getProfile() {
+    return {
+        name: document.getElementById('profName')?.value || 'Wild Imaginations 3D',
+        type: document.getElementById('profType')?.value || '3D printing & design studio',
+        location: document.getElementById('profLocation')?.value || 'Australia',
+        tone: document.getElementById('profTone')?.value || 'Friendly, creative, and passionate',
+        description: document.getElementById('profDesc')?.value || ''
+    };
+}
+
+function getStats() {
+    return {
+        followers: Number(document.getElementById('statFollowers')?.value || 500),
+        reach: Number(document.getElementById('statReach')?.value || 2000),
+        engagement: Number(document.getElementById('statEngagement')?.value || 4.5),
+        postsLast30Days: Number(document.getElementById('statPosts')?.value || 8)
+    };
+}
+
+// ══════════════════════════════════════════════════════
+// GEMINI API (REST)
+// ══════════════════════════════════════════════════════
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+async function geminiGenerate(prompt, jsonSchema = null) {
+    const key = getApiKey();
+    if (!key) throw new Error('No API key');
+
+    const body = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {}
+    };
+    if (jsonSchema) {
+        body.generationConfig.responseMimeType = 'application/json';
+        body.generationConfig.responseSchema = jsonSchema;
+    }
+
+    const res = await fetch(`${GEMINI_URL}/gemini-2.5-flash:generateContent?key=${key}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    return text;
+}
+
+// ══════════════════════════════════════════════════════
+// CONTENT GENERATION
+// ══════════════════════════════════════════════════════
+async function handleGenerate() {
+    const topic = document.getElementById('topic').value.trim();
+    if (!topic) { toast('Enter a topic first.', 'warning'); return; }
+    if (!hasApiKey()) { toast('Set your Gemini API key in Settings first.', 'warning'); return; }
+
+    const btn = event.target.closest('.btn');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Generating...';
+    btn.disabled = true;
+
+    const profile = getProfile();
+    const platform = document.getElementById('platform').value;
+
+    try {
+        const prompt = `You are an expert social media manager for "${profile.name}", a ${profile.type}. Tone: ${profile.tone}. ${profile.description ? 'About: ' + profile.description : ''}
+Write a catchy, engaging ${platform} post about: "${topic}". Include relevant emojis.
+Return JSON with "content" (the post text) and "hashtags" (array of strings).`;
+
+        const schema = {
+            type: 'OBJECT',
+            properties: {
+                content: { type: 'STRING' },
+                hashtags: { type: 'ARRAY', items: { type: 'STRING' } }
+            }
+        };
+
+        const result = JSON.parse(await geminiGenerate(prompt, schema));
+        generatedContent = result.content || '';
+        generatedHashtags = result.hashtags || [];
+
+        showOutput();
+        toast('Post generated!');
+    } catch (err) {
+        toast('Error: ' + err.message, 'error');
+    }
+
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+}
+
+async function handleGenerateImage() {
+    const topic = document.getElementById('topic').value.trim();
+    if (!topic) { toast('Enter a topic first.', 'warning'); return; }
+    if (!hasApiKey()) { toast('Set your Gemini API key in Settings first.', 'warning'); return; }
+
+    const btn = event.target.closest('.btn');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Generating...';
+    btn.disabled = true;
+
+    const profile = getProfile();
+    const key = getApiKey();
+
+    try {
+        const res = await fetch(`${GEMINI_URL}/gemini-2.0-flash-exp:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `Professional marketing image for a ${profile.type}: ${topic}. High quality, vibrant, cinematic lighting, no text or watermarks.` }] }],
+                generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
+            })
+        });
+
+        const data = await res.json();
+        const parts = data.candidates?.[0]?.content?.parts;
+        let found = false;
+        if (parts) {
+            for (const part of parts) {
+                if (part.inlineData?.data) {
+                    const mime = part.inlineData.mimeType || 'image/png';
+                    generatedImage = `data:${mime};base64,${part.inlineData.data}`;
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (found) { showOutput(); toast('Image generated!'); }
+        else { toast('Image generation not available with current model. Try again.', 'warning'); }
+    } catch (err) {
+        toast('Image error: ' + err.message, 'error');
+    }
+
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+}
+
+function showOutput() {
+    const card = document.getElementById('outputCard');
+    const platform = document.getElementById('platform').value;
+    card.style.display = 'block';
+
+    document.getElementById('outputPlatformLabel').innerHTML =
+        (platform === 'Instagram' ? '<span style="color:var(--pink);">📷</span>' : '<span style="color:var(--blue);">📘</span>') +
+        ' Generated Post';
+
+    document.getElementById('outputContent').textContent = generatedContent;
+
+    const hashDiv = document.getElementById('outputHashtags');
+    hashDiv.innerHTML = generatedHashtags.map(h =>
+        `<span class="hashtag-pill">${h.startsWith('#') ? h : '#' + h}</span>`
+    ).join('');
+
+    const imgEl = document.getElementById('outputImage');
+    if (generatedImage) { imgEl.src = generatedImage; imgEl.style.display = 'block'; }
+    else { imgEl.style.display = 'none'; }
+}
+
+function handleSavePost() {
+    if (!generatedContent) { toast('Generate content first.', 'warning'); return; }
+    const platform = document.getElementById('platform').value;
+    const scheduleDate = document.getElementById('scheduleDate').value;
+
+    const post = {
+        id: 'sp_' + Date.now(),
+        platform,
+        content: generatedContent,
+        hashtags: generatedHashtags,
+        scheduledFor: scheduleDate || new Date().toISOString(),
+        status: scheduleDate ? 'Scheduled' : 'Draft',
+        image: generatedImage || undefined,
+        topic: document.getElementById('topic').value
+    };
+
+    posts.unshift(post);
+    savePosts();
+    toast(scheduleDate ? 'Post scheduled!' : 'Post saved as draft!');
+
+    // Reset
+    generatedContent = '';
+    generatedHashtags = [];
+    generatedImage = null;
+    document.getElementById('outputCard').style.display = 'none';
+    document.getElementById('topic').value = '';
+    document.getElementById('scheduleDate').value = '';
+}
+
+// ══════════════════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════════════════
+function renderCalendar() {
+    const list = document.getElementById('calendarList');
+    const countEl = document.getElementById('postCount');
+    countEl.textContent = posts.length + ' posts';
+
+    if (posts.length === 0) {
+        list.innerHTML = `<div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <p>No posts yet. Create one in the Create tab or use Smart AI.</p>
+        </div>`;
+        return;
+    }
+
+    list.innerHTML = posts.map(post => `
+        <div class="post-card">
+            ${post.image ? `<img src="${post.image}" class="post-img" alt="">` : ''}
+            <div class="post-card-body">
+                <div class="post-meta">
+                    <span class="platform-badge ${post.platform === 'Instagram' ? 'platform-ig' : 'platform-fb'}">${post.platform}</span>
+                    <span class="status-badge status-${post.status.toLowerCase()}">${post.status}</span>
+                    <span class="post-date">${new Date(post.scheduledFor).toLocaleDateString()} ${new Date(post.scheduledFor).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span>
+                    ${post.pillar ? `<span class="post-pillar">${post.pillar}</span>` : ''}
+                </div>
+                <p class="post-content">${escapeHtml(post.content)}</p>
+                ${post.hashtags?.length ? `<div class="post-hashtags">${post.hashtags.slice(0,5).map(t => `<span class="post-hashtag">${t}</span>`).join('')}</div>` : ''}
+            </div>
+            <button class="post-delete" onclick="deletePost('${post.id}')" title="Delete">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            </button>
+        </div>
+    `).join('');
+}
+
+function deletePost(id) {
+    posts = posts.filter(p => p.id !== id);
+    savePosts();
+    renderCalendar();
+    toast('Post deleted.');
+}
+
+function savePosts() {
+    localStorage.setItem('wi3d_posts', JSON.stringify(posts));
+    renderCalendar();
+}
+
+// ══════════════════════════════════════════════════════
+// SMART AI SCHEDULE
+// ══════════════════════════════════════════════════════
+async function handleSmartSchedule() {
+    if (!hasApiKey()) { toast('Set your Gemini API key in Settings first.', 'warning'); return; }
+
+    const btn = event.target.closest('.btn');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Generating...';
+    btn.disabled = true;
+
+    const profile = getProfile();
+    const stats = getStats();
+    const count = document.getElementById('smartCount').value;
+    const now = new Date();
+    const end = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+    try {
+        const prompt = `You are a social media strategist for "${profile.name}", a ${profile.type}. Tone: ${profile.tone}. ${profile.description ? 'About: ' + profile.description : ''}
+Current date: ${now.toISOString().split('T')[0]}.
+Window: ${now.toISOString().split('T')[0]} to ${end.toISOString().split('T')[0]}.
+Stats: Followers ${stats.followers}, Engagement ${stats.engagement}%, Reach ${stats.reach}.
+
+Generate exactly ${count} social media posts spread across the next 2 weeks.
+Mix platforms (Facebook and Instagram). Schedule at optimal times for Australia.
+
+Return JSON with:
+- "strategy": a 2-sentence strategy summary
+- "posts": array of objects with: platform, scheduledFor (ISO datetime), topic, content, hashtags (array), imagePrompt, reasoning, pillar`;
+
+        const schema = {
+            type: 'OBJECT',
+            properties: {
+                strategy: { type: 'STRING' },
+                posts: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
+                    platform: { type: 'STRING' },
+                    scheduledFor: { type: 'STRING' },
+                    topic: { type: 'STRING' },
+                    content: { type: 'STRING' },
+                    hashtags: { type: 'ARRAY', items: { type: 'STRING' } },
+                    imagePrompt: { type: 'STRING' },
+                    reasoning: { type: 'STRING' },
+                    pillar: { type: 'STRING' }
+                }}}
+            }
+        };
+
+        const result = JSON.parse(await geminiGenerate(prompt, schema));
+        smartPosts = result.posts || [];
+        const strategy = result.strategy || '';
+
+        const stratEl = document.getElementById('smartStrategy');
+        if (strategy) {
+            stratEl.innerHTML = `<div class="strategy-box"><h4>Strategy</h4><p>${escapeHtml(strategy)}</p></div>`;
+        }
+
+        renderSmartPosts();
+        toast(`${smartPosts.length} posts generated!`);
+    } catch (err) {
+        toast('Error: ' + err.message, 'error');
+    }
+
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+}
+
+function renderSmartPosts() {
+    const list = document.getElementById('smartPostsList');
+    if (smartPosts.length === 0) { list.innerHTML = ''; return; }
+
+    list.innerHTML = `
+        <div class="accept-bar">
+            <h3>${smartPosts.length} Posts Generated</h3>
+            <button class="btn btn-success" onclick="acceptSmartPosts()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Accept All & Add to Calendar
+            </button>
+        </div>
+        ${smartPosts.map(sp => `
+            <div class="post-card">
+                <div class="post-card-body">
+                    <div class="post-meta">
+                        <span class="platform-badge ${sp.platform === 'Instagram' ? 'platform-ig' : 'platform-fb'}">${sp.platform}</span>
+                        <span class="post-date">${new Date(sp.scheduledFor).toLocaleDateString()} ${new Date(sp.scheduledFor).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span>
+                        ${sp.pillar ? `<span class="post-pillar">${sp.pillar}</span>` : ''}
+                    </div>
+                    <p class="post-content" style="-webkit-line-clamp:4;">${escapeHtml(sp.content)}</p>
+                    <div class="post-hashtags">${(sp.hashtags||[]).map(t => `<span class="post-hashtag">${t}</span>`).join('')}</div>
+                    ${sp.reasoning ? `<p class="reasoning">${escapeHtml(sp.reasoning)}</p>` : ''}
+                </div>
+            </div>
+        `).join('')}
+    `;
+}
+
+function acceptSmartPosts() {
+    const newPosts = smartPosts.map(sp => ({
+        id: 'sp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        platform: sp.platform,
+        content: sp.content,
+        hashtags: sp.hashtags,
+        scheduledFor: sp.scheduledFor,
+        status: 'Scheduled',
+        imagePrompt: sp.imagePrompt,
+        reasoning: sp.reasoning,
+        pillar: sp.pillar,
+        topic: sp.topic
+    }));
+    posts = [...newPosts, ...posts];
+    savePosts();
+    toast(`${newPosts.length} posts added to calendar!`);
+    smartPosts = [];
+    document.getElementById('smartPostsList').innerHTML = '';
+    document.getElementById('smartStrategy').innerHTML = '';
+}
+
+// ══════════════════════════════════════════════════════
+// INSIGHTS
+// ══════════════════════════════════════════════════════
+async function handleAnalyze() {
+    if (!hasApiKey()) { toast('Set your Gemini API key in Settings first.', 'warning'); return; }
+
+    const btn = event.target.closest('.btn');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+    btn.disabled = true;
+
+    const profile = getProfile();
+    const stats = getStats();
+
+    try {
+        const [recs, times] = await Promise.all([
+            geminiGenerate(`You are a social media strategist for "${profile.name}", a ${profile.type}.
+Stats: Followers: ${stats.followers}, Reach: ${stats.reach}, Engagement: ${stats.engagement}%, Posts: ${stats.postsLast30Days}.
+Provide 3 specific, high-impact recommendations. Format as a concise bulleted list.`),
+            geminiGenerate(`What are the best times to post on Instagram and Facebook for a ${profile.type} in ${profile.location}? Give a concise bulleted list of 3 best time slots for the upcoming week.`)
+        ]);
+
+        if (recs) {
+            document.getElementById('recCard').style.display = 'block';
+            document.getElementById('recOutput').textContent = recs;
+        }
+        if (times) {
+            document.getElementById('timesCard').style.display = 'block';
+            document.getElementById('timesOutput').textContent = times;
+        }
+        toast('Analysis complete!');
+    } catch (err) {
+        toast('Error: ' + err.message, 'error');
+    }
+
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+}
+
+// ══════════════════════════════════════════════════════
+// DATA MANAGEMENT
+// ══════════════════════════════════════════════════════
+function exportData() {
+    const data = JSON.stringify({ posts, profile: getProfile(), stats: getStats() }, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wi3d-social-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Data exported!');
+}
+
+function clearAllPosts() {
+    if (!confirm('Delete all posts? This cannot be undone.')) return;
+    posts = [];
+    savePosts();
+    toast('All posts cleared.');
+}
+
+// ══════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// Schedule date label
+document.getElementById('scheduleDate')?.addEventListener('change', function() {
+    document.getElementById('saveLabel').textContent = this.value ? 'Schedule' : 'Save Draft';
+});
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+updateApiStatus();
+renderCalendar();
+</script>
+</body>
+</html>
