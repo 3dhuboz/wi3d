@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wild Imaginations 3D — Admin Panel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--pink:#ee25bc;--pink-light:#ff63bb;--pink-glow:rgba(238,37,188,0.25);
+--bg:#0f0a1a;--bg2:#161227;--bg3:#1e1838;--bg4:#2a2348;
+--border:rgba(255,255,255,0.08);--text:#f3f4f6;--muted:#9ca3af;--dim:#6b7280;
+--green:#34d399;--red:#f87171;--blue:#60a5fa;--yellow:#fbbf24;--purple:#a78bfa;
+--radius:10px;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px;line-height:1.5}
+
+/* Sidebar */
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sidebar-brand{padding:1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-brand img{height:32px}
+.sidebar-brand div h2{font-size:.85rem;color:#fff}
+.sidebar-brand div p{font-size:.6rem;color:var(--pink-light)}
+.sidebar-nav{flex:1;padding:.75rem 0;overflow-y:auto}
+.sidebar-nav button{width:100%;display:flex;align-items:center;gap:10px;padding:10px 20px;background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .15s;text-align:left;font-family:inherit}
+.sidebar-nav button:hover{color:#fff;background:rgba(255,255,255,.04)}
+.sidebar-nav button.active{color:var(--pink-light);background:rgba(238,37,188,.08);border-right:2px solid var(--pink-light)}
+.sidebar-nav button svg{width:16px;height:16px;flex-shrink:0}
+.sidebar-nav .divider{height:1px;background:var(--border);margin:.5rem 1rem}
+.sidebar-footer{padding:1rem;border-top:1px solid var(--border);font-size:.7rem;color:var(--dim)}
+.sidebar-footer a{color:var(--pink-light);text-decoration:none}
+
+/* Main */
+.main-wrap{flex:1;margin-left:220px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:56px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:40;backdrop-filter:blur(12px)}
+.topbar h1{font-size:1rem;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:12px;font-size:.8rem}
+.status-pill{display:flex;align-items:center;gap:6px;font-size:.75rem;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.05)}
+.status-pill .dot{width:7px;height:7px;border-radius:50%}
+.dot-green{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot-yellow{background:var(--yellow)}
+
+.content{flex:1;padding:1.5rem;overflow-y:auto}
+.panel{display:none}.panel.active{display:block}
+
+/* Cards */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem}
+.card h3{font-size:.9rem;font-weight:700;margin-bottom:.75rem;color:#fff}
+.card-sub{font-size:.7rem;color:var(--dim);margin-bottom:1rem}
+
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+
+/* Stat Cards */
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center}
+.stat-card .val{font-size:1.5rem;font-weight:700;color:var(--pink-light)}
+.stat-card .lbl{font-size:.7rem;color:var(--muted);margin-top:4px}
+
+/* Forms */
+label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:3px;font-weight:500}
+input,textarea,select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:#fff;font-size:.85rem;font-family:inherit;transition:border .2s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--pink)}
+textarea{resize:vertical;min-height:70px}
+select option{background:#1a1a2e}
+.form-group{margin-bottom:.85rem}
+.form-row{display:flex;gap:.75rem}.form-row>*{flex:1}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:.8rem;font-weight:600;border:none;border-radius:7px;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn svg{width:14px;height:14px}
+.btn-p{background:linear-gradient(135deg,var(--pink-light),var(--pink));color:#fff;box-shadow:0 3px 12px var(--pink-glow)}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 5px 18px var(--pink-glow)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-s{background:rgba(99,102,241,.7);color:#fff}
+.btn-g{background:rgba(16,185,129,.7);color:#fff}
+.btn-d{background:rgba(127,29,29,.5);color:#fca5a5}
+.btn-o{background:rgba(75,85,99,.5);color:#fff}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* Post Cards */
+.post-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem;margin-bottom:.6rem;display:flex;gap:.75rem}
+.post-body{flex:1;min-width:0}
+.post-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.badge{font-size:.62rem;padding:2px 7px;border-radius:99px;font-weight:600}
+.badge-fb{background:rgba(59,130,246,.2);color:var(--blue)}
+.badge-ig{background:rgba(244,114,182,.2);color:#f472b6}
+.badge-draft{background:rgba(75,85,99,.5);color:var(--muted)}
+.badge-sched{background:rgba(59,130,246,.2);color:var(--blue)}
+.badge-posted{background:rgba(16,185,129,.2);color:var(--green)}
+.post-text{font-size:.8rem;color:#d1d5db;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.post-tags{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}
+.post-tag{font-size:.6rem;color:var(--pink-light)}
+.post-date{font-size:.65rem;color:var(--dim)}
+.post-del{background:none;border:none;color:var(--red);cursor:pointer;padding:6px;opacity:.5;flex-shrink:0}
+.post-del:hover{opacity:1}
+.post-img{width:50px;height:50px;border-radius:7px;object-fit:cover;flex-shrink:0}
+
+/* Output */
+.out-box{background:rgba(0,0,0,.3);border-radius:7px;padding:.85rem;color:#e5e7eb;white-space:pre-wrap;font-size:.85rem;line-height:1.6}
+.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:.6rem}
+.tag-pill{font-size:.7rem;background:rgba(238,37,188,.12);color:var(--pink-light);padding:3px 8px;border-radius:99px}
+.gen-img{max-width:280px;width:100%;border-radius:7px;border:1px solid var(--border);margin-top:.6rem}
+
+/* Strategy */
+.strat-box{background:rgba(238,37,188,.06);border:1px solid rgba(238,37,188,.2);border-radius:7px;padding:.85rem;margin-top:.85rem}
+.strat-box h4{font-size:.8rem;color:var(--pink-light);margin-bottom:4px}
+.strat-box p{font-size:.8rem;color:#d1d5db}
+
+/* Empty */
+.empty{text-align:center;padding:3rem 1rem;color:var(--dim)}
+.empty p{font-size:.85rem}
+
+/* Toast */
+.toast-wrap{position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:6px;max-width:320px}
+.toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:7px;border:1px solid;color:#fff;font-size:.8rem;box-shadow:0 6px 24px rgba(0,0,0,.4);animation:slideR .3s ease-out}
+.toast-ok{background:rgba(6,78,59,.9);border-color:var(--green)}
+.toast-err{background:rgba(127,29,29,.9);border-color:var(--red)}
+.toast-warn{background:rgba(120,53,15,.9);border-color:var(--yellow)}
+.toast-x{background:none;border:none;color:#fff;opacity:.4;cursor:pointer;margin-left:auto}
+@keyframes slideR{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* Spinner */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .5s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Insights */
+.ins-out{font-size:.85rem;color:#d1d5db;white-space:pre-wrap;line-height:1.6}
+
+/* Login */
+.login-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;width:340px;text-align:center}
+.login-box img{height:48px;margin-bottom:1rem}
+.login-box h2{font-size:1.1rem;margin-bottom:.25rem}
+.login-box p{font-size:.75rem;color:var(--muted);margin-bottom:1.5rem}
+.login-box input{margin-bottom:.75rem}
+.login-box .btn{width:100%;justify-content:center}
+.login-err{color:var(--red);font-size:.75rem;margin-top:.5rem}
+
+/* Responsive */
+@media(max-width:768px){
+.sidebar{width:60px}.sidebar-brand div,.sidebar-nav button span,.sidebar-footer{display:none}
+.sidebar-nav button{justify-content:center;padding:12px}
+.main-wrap{margin-left:60px}
+.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+.form-row{flex-direction:column}
+}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#4b5563;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+<div class="login-box">
+<img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/8.26.2024_66cbde82f08154.98464417.png" alt="WI3D">
+<h2>Admin Panel</h2>
+<p>Wild Imaginations 3D</p>
+<input type="password" id="loginPw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()">
+<button class="btn btn-p" onclick="doLogin()">Sign In</button>
+<div class="login-err" id="loginErr"></div>
+<p style="font-size:.65rem;color:var(--dim);margin-top:1rem;">Default password: <code>wi3d2025</code></p>
+</div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-brand">
+<img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/8.26.2024_66cbde82f08154.98464417.png" alt="">
+<div><h2>WI3D Admin</h2><p>Social Media + CMS</p></div>
+</div>
+<nav class="sidebar-nav">
+<button class="active" data-p="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></button>
+<button data-p="content"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Site Content</span></button>
+<button data-p="cats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4"/><path d="M18 3h-4v18h4a2 2 0 002-2V5a2 2 0 00-2-2z"/></svg><span>Categories</span></button>
+<div class="divider"></div>
+<button data-p="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4V2m0 2v2m0-2h2m-2 0h-2"/><path d="m14 7-5.5 5.5a2.1 2.1 0 1 0 3 3L17 10"/><path d="m14 7 3 3"/></svg><span>AI Create</span></button>
+<button data-p="calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Calendar</span></button>
+<button data-p="smart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg><span>Smart AI</span></button>
+<button data-p="insights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span>Insights</span></button>
+<div class="divider"></div>
+<button data-p="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>Settings</span></button>
+</nav>
+<div class="sidebar-footer"><a href="improved-layout-design.html">← Back to Site</a></div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap" id="mainWrap">
+<div class="topbar">
+<h1 id="pageTitle">Dashboard</h1>
+<div class="topbar-right">
+<div class="status-pill"><span class="dot" id="sDot"></span><span id="sTxt">No API Key</span></div>
+<button class="btn btn-o" onclick="doLogout()" style="font-size:.72rem;padding:5px 10px;">Logout</button>
+</div>
+</div>
+
+<div class="content">
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="panel active" id="p-dash">
+<div class="grid-4" style="margin-bottom:1.25rem">
+<div class="stat-card"><div class="val" id="dPosts">0</div><div class="lbl">Total Posts</div></div>
+<div class="stat-card"><div class="val" id="dSched">0</div><div class="lbl">Scheduled</div></div>
+<div class="stat-card"><div class="val" id="dDraft">0</div><div class="lbl">Drafts</div></div>
+<div class="stat-card"><div class="val" id="dCats">12</div><div class="lbl">Categories</div></div>
+</div>
+<div class="grid-2">
+<div class="card">
+<h3>Quick Actions</h3>
+<div class="btn-row">
+<button class="btn btn-p" onclick="go('create')">Create Post</button>
+<button class="btn btn-s" onclick="go('smart')">Smart Schedule</button>
+<button class="btn btn-o" onclick="go('content')">Edit Content</button>
+</div>
+</div>
+<div class="card">
+<h3>Business Info</h3>
+<p style="font-size:.8rem;color:var(--muted)"><strong style="color:#fff">Wild Imaginations 3D</strong><br>3D printing &amp; design studio<br>Australia<br><a href="https://www.facebook.com/profile.php?id=61559911828986" target="_blank" style="color:var(--pink-light)">Facebook</a> · <a href="https://www.instagram.com/wildimaginations3d" target="_blank" style="color:var(--pink-light)">Instagram</a></p>
+</div>
+</div>
+<div class="card">
+<h3>Recent Posts</h3>
+<div id="dashRecent"></div>
+</div>
+</div>
+
+<!-- ═══ SITE CONTENT ═══ -->
+<div class="panel" id="p-content">
+<div class="card">
+<h3>Hero Section</h3>
+<p class="card-sub">Edit the main hero text shown on the homepage.</p>
+<div class="form-group"><label>Headline</label><input id="cHero" value="Bring Your Imagination to Life with 3D Printing"></div>
+<div class="form-group"><label>Subtext</label><textarea id="cSub">Specializing in cosplay pieces, educational toys, and custom designs using eco-friendly PLA+ materials. Quality craftsmanship meets creative innovation.</textarea></div>
+<div class="form-group"><label>Hero Image URL</label><input id="cHeroImg" value="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/GroupAnn%20Image1%20V2_1728514393.jpg"></div>
+<button class="btn btn-p" onclick="saveContent()">Save Content</button>
+</div>
+<div class="card">
+<h3>About Section</h3>
+<div class="form-group"><label>About Title</label><input id="cAboutTitle" value="Our Story"></div>
+<div class="form-group"><label>About Paragraph 1</label><textarea id="cAbout1">At Wild Imaginations 3D, we are a husband and wife team dedicated to bringing creativity and innovation to life through 3D printing and design. With years of experience, we specialize in creating stunning cosplay pieces and educational toys that enrich learning experiences.</textarea></div>
+<div class="form-group"><label>About Paragraph 2</label><textarea id="cAbout2">We take great pride in using exclusively high-grade, environmentally friendly PLA+ materials, ensuring our creations are vibrant, durable, and kind to the planet. Our commitment to quality extends to holding all necessary commercial licenses for everything we sell.</textarea></div>
+<div class="form-group"><label>About Image URL</label><input id="cAboutImg" value="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/2024-10-14_14-05-01_1728878732.jpg"></div>
+<button class="btn btn-p" onclick="saveContent()">Save Content</button>
+</div>
+<div class="card">
+<h3>Shop Banner</h3>
+<div class="form-group"><label>Banner Title</label><input id="cShopTitle" value="Browse Our Collections"></div>
+<div class="form-group"><label>Banner Text</label><textarea id="cShopText">From cosplay props to D&D miniatures, educational toys to hobby paints — explore our full range of 3D printed creations.</textarea></div>
+<div class="form-group"><label>Store URL</label><input id="cStoreUrl" value="https://www.wildimaginations3d.com.au/"></div>
+<button class="btn btn-p" onclick="saveContent()">Save Content</button>
+</div>
+<div class="card">
+<h3>Feature Cards</h3>
+<p class="card-sub">Edit the 6 feature/benefit cards shown on the homepage.</p>
+<div id="featureEditor"></div>
+<button class="btn btn-p" onclick="saveContent()" style="margin-top:.75rem">Save All Features</button>
+</div>
+</div>
+
+<!-- ═══ CATEGORIES ═══ -->
+<div class="panel" id="p-cats">
+<div class="card">
+<h3>Manage Categories</h3>
+<p class="card-sub">These link to your Square Online store. Add, edit, or remove categories.</p>
+<div id="catList"></div>
+<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
+<h3 style="margin-bottom:.75rem">Add New Category</h3>
+<div class="form-row">
+<div class="form-group"><label>Icon (emoji)</label><input id="newCatIcon" placeholder="🎭"></div>
+<div class="form-group"><label>Name</label><input id="newCatName" placeholder="Category Name"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Description</label><input id="newCatDesc" placeholder="Short description"></div>
+<div class="form-group"><label>Store URL</label><input id="newCatUrl" placeholder="https://www.wildimaginations3d.com.au/shop/..."></div>
+</div>
+<button class="btn btn-g" onclick="addCategory()">Add Category</button>
+</div>
+</div>
+</div>
+
+<!-- ═══ AI CREATE ═══ -->
+<div class="panel" id="p-create">
+<div class="card">
+<h3>AI Content Generator</h3>
+<div class="form-group"><label>Topic / Prompt</label><textarea id="topic" placeholder="e.g., New cosplay pieces in stock, PLA colour showcase, behind the scenes 3D printing..."></textarea></div>
+<div class="btn-row">
+<select id="platform" style="width:auto"><option value="Instagram">Instagram</option><option value="Facebook">Facebook</option></select>
+<button class="btn btn-p" onclick="handleGen()">Generate Text</button>
+<button class="btn btn-s" onclick="handleGenImg()">Generate Image</button>
+</div>
+</div>
+<div class="card" id="outCard" style="display:none">
+<h3 id="outLabel">Generated Post</h3>
+<div class="out-box" id="outContent"></div>
+<div class="tag-row" id="outTags"></div>
+<img id="outImg" class="gen-img" style="display:none" alt="">
+<div style="margin-top:.75rem" class="btn-row">
+<div><label>Schedule</label><input type="datetime-local" id="schedDate" style="width:auto"></div>
+<button class="btn btn-g" onclick="savePost()"><span id="saveLabel">Save Draft</span></button>
+</div>
+</div>
+</div>
+
+<!-- ═══ CALENDAR ═══ -->
+<div class="panel" id="p-calendar">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+<h3 style="font-size:1rem">Content Calendar</h3>
+<span id="postCnt" style="font-size:.8rem;color:var(--muted)"></span>
+</div>
+<div id="calList"></div>
+</div>
+
+<!-- ═══ SMART AI ═══ -->
+<div class="panel" id="p-smart">
+<div class="card">
+<h3>Smart AI Scheduler</h3>
+<p class="card-sub">Let AI plan your content calendar for the next 2 weeks.</p>
+<div class="btn-row">
+<div><label>Posts</label><select id="smartCnt" style="width:auto"><option value="5">5</option><option value="7" selected>7</option><option value="10">10</option><option value="14">14</option></select></div>
+<button class="btn btn-p" onclick="handleSmart()" style="margin-top:16px">Generate Schedule</button>
+</div>
+<div id="smartStrat"></div>
+</div>
+<div id="smartList"></div>
+</div>
+
+<!-- ═══ INSIGHTS ═══ -->
+<div class="panel" id="p-insights">
+<div class="card">
+<h3>Your Stats</h3>
+<div class="grid-4">
+<div><label>Followers</label><input type="number" id="stF" value="500"></div>
+<div><label>Reach</label><input type="number" id="stR" value="2000"></div>
+<div><label>Engagement %</label><input type="number" id="stE" value="4.5" step="0.1"></div>
+<div><label>Posts (30d)</label><input type="number" id="stP" value="8"></div>
+</div>
+<button class="btn btn-p" onclick="handleAnalyze()" style="margin-top:.75rem">Analyze & Recommend</button>
+</div>
+<div class="card" id="recCard" style="display:none"><h3 style="color:var(--pink-light)">Recommendations</h3><div class="ins-out" id="recOut"></div></div>
+<div class="card" id="timCard" style="display:none"><h3 style="color:var(--pink-light)">Best Posting Times</h3><div class="ins-out" id="timOut"></div></div>
+</div>
+
+<!-- ═══ SETTINGS ═══ -->
+<div class="panel" id="p-settings">
+<div class="card">
+<h3>Gemini API Key</h3>
+<p class="card-sub">Powers all AI features. Get a free key from <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--pink-light)">Google AI Studio</a>.</p>
+<div class="btn-row"><input type="password" id="apiKey" placeholder="Paste your Gemini API key..." style="max-width:400px"><button class="btn btn-p" onclick="saveKey()">Save</button></div>
+<p id="keyStatus" style="font-size:.7rem;margin-top:6px"></p>
+</div>
+<div class="card">
+<h3>Business Profile</h3>
+<p class="card-sub">AI uses this to tailor content to your brand.</p>
+<div class="form-row">
+<div class="form-group"><label>Business Name</label><input id="pName" value="Wild Imaginations 3D"></div>
+<div class="form-group"><label>Business Type</label><input id="pType" value="3D printing & design studio"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Location</label><input id="pLoc" value="Australia"></div>
+<div class="form-group"><label>Tone</label><input id="pTone" value="Friendly, creative, and passionate"></div>
+</div>
+<div class="form-group"><label>Description</label><textarea id="pDesc">A husband and wife team dedicated to bringing creativity and innovation to life through 3D printing. Specializing in cosplay pieces, educational toys, D&D miniatures, and custom designs using eco-friendly PLA+ materials.</textarea></div>
+<button class="btn btn-p" onclick="saveProfile()">Save Profile</button>
+</div>
+<div class="card">
+<h3>Social Accounts</h3>
+<div class="form-row">
+<div class="form-group"><label>Facebook Page ID</label><input id="fbId" value="61559911828986"></div>
+<div class="form-group"><label>Facebook URL</label><input id="fbUrl" value="https://www.facebook.com/profile.php?id=61559911828986" readonly style="opacity:.6"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Instagram</label><input id="igHandle" value="wildimaginations3d"></div>
+<div class="form-group"><label>Email</label><input id="contactEmail" value="wildimaginations3dd@gmail.com"></div>
+</div>
+</div>
+<div class="card">
+<h3>Admin Password</h3>
+<div class="form-row">
+<div class="form-group"><label>New Password</label><input type="password" id="newPw" placeholder="Enter new password"></div>
+<div><button class="btn btn-p" onclick="changePw()" style="margin-top:18px">Update</button></div>
+</div>
+</div>
+<div class="card">
+<h3>Data Management</h3>
+<div class="btn-row">
+<button class="btn btn-o" onclick="exportData()">Export All Data</button>
+<button class="btn btn-o" onclick="importDataPrompt()">Import Data</button>
+<button class="btn btn-d" onclick="clearPosts()">Clear All Posts</button>
+</div>
+<input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+</div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /main-wrap -->
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ═══════════ STATE ═══════════
+let posts = JSON.parse(localStorage.getItem('wi3d_posts')||'[]');
+let smartPosts = [];
+let genContent='', genTags=[], genImage=null;
+
+const DEFAULT_FEATURES = [
+{icon:'🌱',title:'Eco-Friendly Materials',text:'We exclusively use high-grade, environmentally friendly PLA+ materials that are kind to the planet while delivering vibrant, durable results.'},
+{icon:'🎭',title:'Expert Cosplay Craftsmanship',text:'Specializing in stunning cosplay pieces that help fans embody their favorite characters with attention to detail and quality.'},
+{icon:'🧠',title:'Educational & Sensory Toys',text:'Creating engaging sensory and educational toys designed to enrich learning experiences for children of all ages.'},
+{icon:'📜',title:'Commercially Licensed',text:'We hold all necessary commercial licenses for our products, ensuring authenticity and legal compliance in everything we sell.'},
+{icon:'👥',title:'Husband & Wife Team',text:'A dedicated team bringing years of experience and passion for 3D printing and design to every project we undertake.'},
+{icon:'✨',title:'Custom Designs',text:'From officially licensed designs to unique custom creations, we bring your ideas to life with precision and creativity.'}
+];
+
+const DEFAULT_CATS = [
+{icon:'🎭',name:'Cosplay',desc:'Helmets, swords, props & accessories',url:'https://www.wildimaginations3d.com.au/shop/cosplay/LE2QMXRZGWWQL4CLBE5FIL62'},
+{icon:'🐉',name:'D&D Miniatures',desc:'Detailed figurines, busts & campaigns',url:'https://www.wildimaginations3d.com.au/shop/dungeons-dragons-mini-figs/RG5XGWYB7MX72RJ3UQY4VH7S'},
+{icon:'🧸',name:'Educational & Sensory',desc:'Sensory trays, packs & learning tools',url:'https://www.wildimaginations3d.com.au/shop/educational-sensory/NLB6I5L7JUA7ESOCDY2QMJS5'},
+{icon:'🎨',name:'SMS Paints',desc:'Premium acrylic lacquers & hobby paints',url:'https://www.wildimaginations3d.com.au/shop/sms-paints/Y6UHTXPRCCEYQ6JWAAOAHJVZ'},
+{icon:'⚡',name:'Pokemon',desc:'Pokeballs & Pokemon collectibles',url:'https://www.wildimaginations3d.com.au/shop/pokemon/6CJNUK2NUKEGOLMFJ4VUHMUM'},
+{icon:'🤖',name:'Battle Droids',desc:'Detailed droid replicas',url:'https://www.wildimaginations3d.com.au/shop/battle-droids/EMBB2PN4UAZUP24JXM7QLN5X'},
+{icon:'🏰',name:'Wargaming Terrain',desc:'Battle-ready terrain pieces',url:'https://www.wildimaginations3d.com.au/shop/wargaming-terrain/WY2J3MISNGVNONHAGROZEN2P'},
+{icon:'🦸',name:'Printlings',desc:'Character collectibles',url:'https://www.wildimaginations3d.com.au/shop/printlings/O4F5LALMLD72JT762VT33NXG'},
+{icon:'🌀',name:'Fidgets',desc:'Sensory fidget toys',url:'https://www.wildimaginations3d.com.au/shop/fidgets/FEMPG5LCOEIAW53HWA7KP52T'},
+{icon:'🧪',name:'IckySticky',desc:'Fun sticky creations',url:'https://www.wildimaginations3d.com.au/shop/ickysticky/OF5WCT7CAX36IGZ4G5W6MBY5'},
+{icon:'🖌️',name:'Hobby Tools & Accessories',desc:'Brushes, primers & precision tools',url:'https://www.wildimaginations3d.com.au/shop/hobby-paints-tools-accessories/YXQVGMT26BHGENEC5JWYJK2L'},
+{icon:'🌍',name:'Green Stuff World',desc:'Modelling & terrain supplies',url:'https://www.wildimaginations3d.com.au/shop/green-stuff-world/2HHIANDVI6YFMYZLRFPK7DQO'}
+];
+
+// ═══════════ AUTH ═══════════
+function doLogin(){
+const pw=document.getElementById('loginPw').value;
+const stored=localStorage.getItem('wi3d_admin_pw')||'wi3d2025';
+if(pw===stored){localStorage.setItem('wi3d_auth','1');document.getElementById('loginOverlay').style.display='none'}
+else{document.getElementById('loginErr').textContent='Incorrect password'}
+}
+function doLogout(){localStorage.removeItem('wi3d_auth');location.reload()}
+function checkAuth(){if(localStorage.getItem('wi3d_auth')==='1')document.getElementById('loginOverlay').style.display='none'}
+function changePw(){
+const np=document.getElementById('newPw').value.trim();
+if(!np||np.length<4){toast('Password must be at least 4 characters','warn');return}
+localStorage.setItem('wi3d_admin_pw',np);document.getElementById('newPw').value='';toast('Password updated!')
+}
+
+// ═══════════ TOAST ═══════════
+function toast(m,t='ok'){
+const c=document.getElementById('toastWrap'),el=document.createElement('div');
+el.className=`toast toast-${t}`;el.innerHTML=`<span>${esc(m)}</span><button class="toast-x" onclick="this.parentElement.remove()">✕</button>`;
+c.appendChild(el);setTimeout(()=>el.remove(),4000)
+}
+
+// ═══════════ NAV ═══════════
+const titles={dash:'Dashboard',content:'Site Content',cats:'Categories',create:'AI Create',calendar:'Content Calendar',smart:'Smart AI Scheduler',insights:'AI Insights',settings:'Settings'};
+document.querySelectorAll('.sidebar-nav button').forEach(b=>{
+b.addEventListener('click',()=>{go(b.dataset.p)})
+});
+function go(p){
+document.querySelectorAll('.sidebar-nav button').forEach(b=>b.classList.toggle('active',b.dataset.p===p));
+document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id==='p-'+p));
+document.getElementById('pageTitle').textContent=titles[p]||p;
+if(p==='calendar')renderCal();if(p==='dash')renderDash();if(p==='cats')renderCats();if(p==='content')renderFeatures();
+}
+
+// ═══════════ API ═══════════
+function getKey(){return localStorage.getItem('wi3d_gemini_key')||''}
+function hasKey(){return !!getKey()}
+function saveKey(){
+const k=document.getElementById('apiKey').value.trim();
+if(!k){toast('Enter a key','warn');return}
+localStorage.setItem('wi3d_gemini_key',k);toast('API Key saved!');updateStatus()
+}
+function updateStatus(){
+const d=document.getElementById('sDot'),t=document.getElementById('sTxt'),s=document.getElementById('keyStatus');
+if(hasKey()){d.className='dot dot-green';t.textContent='AI Active';t.style.color='var(--green)';if(s)s.innerHTML='<span style="color:var(--green)">✓ Key configured</span>';const i=document.getElementById('apiKey');if(i&&!i.value)i.value='••••••••'}
+else{d.className='dot dot-yellow';t.textContent='No API Key';t.style.color='var(--yellow)';if(s)s.textContent=''}
+}
+
+const API='https://generativelanguage.googleapis.com/v1beta/models';
+async function gem(prompt,schema=null){
+const k=getKey();if(!k)throw new Error('No API key');
+const body={contents:[{parts:[{text:prompt}]}],generationConfig:{}};
+if(schema){body.generationConfig.responseMimeType='application/json';body.generationConfig.responseSchema=schema}
+const r=await fetch(`${API}/gemini-2.5-flash:generateContent?key=${k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${r.status}`)}
+const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||''
+}
+
+// ═══════════ PROFILE ═══════════
+function getProf(){return{name:v('pName')||'Wild Imaginations 3D',type:v('pType')||'3D printing & design studio',loc:v('pLoc')||'Australia',tone:v('pTone')||'Friendly, creative, and passionate',desc:v('pDesc')||''}}
+function getStats(){return{followers:+v('stF')||500,reach:+v('stR')||2000,engagement:+v('stE')||4.5,postsLast30Days:+v('stP')||8}}
+function saveProfile(){
+localStorage.setItem('wi3d_profile',JSON.stringify(getProf()));toast('Profile saved!')
+}
+function loadProfile(){
+const p=JSON.parse(localStorage.getItem('wi3d_profile')||'null');
+if(p){sv('pName',p.name);sv('pType',p.type);sv('pLoc',p.loc);sv('pTone',p.tone);sv('pDesc',p.desc)}
+}
+
+// ═══════════ CONTENT EDITOR ═══════════
+function saveContent(){
+const c={hero:v('cHero'),sub:v('cSub'),heroImg:v('cHeroImg'),aboutTitle:v('cAboutTitle'),about1:v('cAbout1'),about2:v('cAbout2'),aboutImg:v('cAboutImg'),shopTitle:v('cShopTitle'),shopText:v('cShopText'),storeUrl:v('cStoreUrl'),features:getFeatures()};
+localStorage.setItem('wi3d_content',JSON.stringify(c));toast('Content saved!')
+}
+function loadContent(){
+const c=JSON.parse(localStorage.getItem('wi3d_content')||'null');
+if(c){sv('cHero',c.hero);sv('cSub',c.sub);sv('cHeroImg',c.heroImg);sv('cAboutTitle',c.aboutTitle);sv('cAbout1',c.about1);sv('cAbout2',c.about2);sv('cAboutImg',c.aboutImg);sv('cShopTitle',c.shopTitle);sv('cShopText',c.shopText);sv('cStoreUrl',c.storeUrl)}
+}
+function getFeatures(){
+const f=[];document.querySelectorAll('.feat-row').forEach(r=>{
+f.push({icon:r.querySelector('.fi').value,title:r.querySelector('.ft').value,text:r.querySelector('.fx').value})
+});return f.length?f:DEFAULT_FEATURES
+}
+function renderFeatures(){
+const c=JSON.parse(localStorage.getItem('wi3d_content')||'null');
+const feats=(c&&c.features)||DEFAULT_FEATURES;
+const el=document.getElementById('featureEditor');
+el.innerHTML=feats.map((f,i)=>`<div class="feat-row" style="border:1px solid var(--border);border-radius:7px;padding:.75rem;margin-bottom:.5rem">
+<div class="form-row"><div class="form-group" style="max-width:60px"><label>Icon</label><input class="fi" value="${esc(f.icon)}"></div><div class="form-group"><label>Title</label><input class="ft" value="${esc(f.title)}"></div></div>
+<div class="form-group"><label>Text</label><textarea class="fx" style="min-height:40px">${esc(f.text)}</textarea></div>
+</div>`).join('')
+}
+
+// ═══════════ CATEGORIES ═══════════
+function getCats(){return JSON.parse(localStorage.getItem('wi3d_cats')||'null')||DEFAULT_CATS}
+function saveCats(cats){localStorage.setItem('wi3d_cats',JSON.stringify(cats))}
+function renderCats(){
+const cats=getCats(),el=document.getElementById('catList');
+document.getElementById('dCats').textContent=cats.length;
+el.innerHTML=cats.map((c,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--border);border-radius:7px;margin-bottom:6px;background:var(--bg4)">
+<span style="font-size:1.3rem;width:32px;text-align:center">${c.icon}</span>
+<div style="flex:1;min-width:0"><strong style="font-size:.82rem">${esc(c.name)}</strong><br><span style="font-size:.7rem;color:var(--dim)">${esc(c.desc)}</span></div>
+<a href="${esc(c.url)}" target="_blank" style="font-size:.65rem;color:var(--blue)">Link</a>
+<button class="post-del" onclick="delCat(${i})" title="Remove">✕</button>
+</div>`).join('')
+}
+function addCategory(){
+const icon=v('newCatIcon').trim(),name=v('newCatName').trim(),desc=v('newCatDesc').trim(),url=v('newCatUrl').trim();
+if(!name){toast('Name is required','warn');return}
+const cats=getCats();cats.push({icon:icon||'📦',name,desc,url});saveCats(cats);
+sv('newCatIcon','');sv('newCatName','');sv('newCatDesc','');sv('newCatUrl','');renderCats();toast('Category added!')
+}
+function delCat(i){const cats=getCats();cats.splice(i,1);saveCats(cats);renderCats();toast('Removed')}
+
+// ═══════════ AI CREATE ═══════════
+async function handleGen(){
+const topic=v('topic').trim();if(!topic){toast('Enter a topic','warn');return}
+if(!hasKey()){toast('Set API key in Settings first','warn');return}
+const btn=event.target.closest('.btn'),orig=btn.innerHTML;btn.innerHTML='<span class="spin"></span> Generating...';btn.disabled=true;
+const p=getProf(),plat=v('platform');
+try{
+const pr=`You are an expert social media manager for "${p.name}", a ${p.type}. Tone: ${p.tone}. ${p.desc?'About: '+p.desc:''}
+Write a catchy ${plat} post about: "${topic}". Include emojis. Return JSON with "content" and "hashtags" (array).`;
+const r=JSON.parse(await gem(pr,{type:'OBJECT',properties:{content:{type:'STRING'},hashtags:{type:'ARRAY',items:{type:'STRING'}}}}));
+genContent=r.content||'';genTags=r.hashtags||[];showOut();toast('Post generated!')
+}catch(e){toast('Error: '+e.message,'err')}
+btn.innerHTML=orig;btn.disabled=false
+}
+async function handleGenImg(){
+const topic=v('topic').trim();if(!topic){toast('Enter a topic','warn');return}
+if(!hasKey()){toast('Set API key in Settings first','warn');return}
+const btn=event.target.closest('.btn'),orig=btn.innerHTML;btn.innerHTML='<span class="spin"></span> Generating...';btn.disabled=true;
+const p=getProf(),k=getKey();
+try{
+const r=await fetch(`${API}/gemini-2.0-flash-exp:generateContent?key=${k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:`Professional marketing image for a ${p.type}: ${topic}. High quality, vibrant, no text.`}]}],generationConfig:{responseModalities:['IMAGE','TEXT']}})});
+const d=await r.json(),parts=d.candidates?.[0]?.content?.parts;let found=false;
+if(parts)for(const pt of parts)if(pt.inlineData?.data){genImage=`data:${pt.inlineData.mimeType||'image/png'};base64,${pt.inlineData.data}`;found=true;break}
+if(found){showOut();toast('Image generated!')}else toast('Image not available with this model','warn')
+}catch(e){toast('Image error: '+e.message,'err')}
+btn.innerHTML=orig;btn.disabled=false
+}
+function showOut(){
+document.getElementById('outCard').style.display='block';
+const plat=v('platform');
+document.getElementById('outLabel').innerHTML=(plat==='Instagram'?'<span style="color:#f472b6">📷</span>':'<span style="color:var(--blue)">📘</span>')+' Generated Post';
+document.getElementById('outContent').textContent=genContent;
+document.getElementById('outTags').innerHTML=genTags.map(t=>`<span class="tag-pill">${t.startsWith('#')?t:'#'+t}</span>`).join('');
+const img=document.getElementById('outImg');if(genImage){img.src=genImage;img.style.display='block'}else img.style.display='none'
+}
+function savePost(){
+if(!genContent){toast('Generate content first','warn');return}
+const sd=v('schedDate'),post={id:'sp_'+Date.now(),platform:v('platform'),content:genContent,hashtags:genTags,scheduledFor:sd||new Date().toISOString(),status:sd?'Scheduled':'Draft',image:genImage||undefined,topic:v('topic')};
+posts.unshift(post);savePosts();toast(sd?'Scheduled!':'Saved as draft!');
+genContent='';genTags=[];genImage=null;document.getElementById('outCard').style.display='none';sv('topic','');sv('schedDate','')
+}
+
+// ═══════════ CALENDAR ═══════════
+function renderCal(){
+const el=document.getElementById('calList');document.getElementById('postCnt').textContent=posts.length+' posts';
+if(!posts.length){el.innerHTML='<div class="empty"><p>No posts yet. Create one or use Smart AI.</p></div>';return}
+el.innerHTML=posts.map(p=>`<div class="post-card">
+${p.image?`<img src="${p.image}" class="post-img" alt="">`:''}
+<div class="post-body"><div class="post-meta">
+<span class="badge ${p.platform==='Instagram'?'badge-ig':'badge-fb'}">${p.platform}</span>
+<span class="badge badge-${p.status.toLowerCase()==='draft'?'draft':p.status.toLowerCase()==='scheduled'?'sched':'posted'}">${p.status}</span>
+<span class="post-date">${new Date(p.scheduledFor).toLocaleDateString()} ${new Date(p.scheduledFor).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+</div><p class="post-text">${esc(p.content)}</p>
+${p.hashtags?.length?'<div class="post-tags">'+p.hashtags.slice(0,5).map(t=>'<span class="post-tag">'+t+'</span>').join('')+'</div>':''}
+</div><button class="post-del" onclick="delPost('${p.id}')">✕</button></div>`).join('')
+}
+function delPost(id){posts=posts.filter(p=>p.id!==id);savePosts();renderCal();toast('Deleted')}
+function savePosts(){localStorage.setItem('wi3d_posts',JSON.stringify(posts));renderCal()}
+
+// ═══════════ SMART AI ═══════════
+async function handleSmart(){
+if(!hasKey()){toast('Set API key in Settings first','warn');return}
+const btn=event.target.closest('.btn'),orig=btn.innerHTML;btn.innerHTML='<span class="spin"></span> Generating...';btn.disabled=true;
+const p=getProf(),s=getStats(),cnt=v('smartCnt'),now=new Date(),end=new Date(now.getTime()+14*864e5);
+try{
+const pr=`You are a social media strategist for "${p.name}", a ${p.type}. Tone: ${p.tone}. ${p.desc?'About: '+p.desc:''}
+Current date: ${now.toISOString().split('T')[0]}. Window: ${now.toISOString().split('T')[0]} to ${end.toISOString().split('T')[0]}.
+Stats: Followers ${s.followers}, Engagement ${s.engagement}%, Reach ${s.reach}.
+Generate exactly ${cnt} posts for the next 2 weeks. Mix Facebook and Instagram. Optimal times for Australia.
+Return JSON with "strategy" (2-sentence summary) and "posts" array with: platform, scheduledFor (ISO), topic, content, hashtags (array), imagePrompt, reasoning, pillar`;
+const schema={type:'OBJECT',properties:{strategy:{type:'STRING'},posts:{type:'ARRAY',items:{type:'OBJECT',properties:{platform:{type:'STRING'},scheduledFor:{type:'STRING'},topic:{type:'STRING'},content:{type:'STRING'},hashtags:{type:'ARRAY',items:{type:'STRING'}},imagePrompt:{type:'STRING'},reasoning:{type:'STRING'},pillar:{type:'STRING'}}}}}};
+const r=JSON.parse(await gem(pr,schema));smartPosts=r.posts||[];
+if(r.strategy)document.getElementById('smartStrat').innerHTML=`<div class="strat-box"><h4>Strategy</h4><p>${esc(r.strategy)}</p></div>`;
+renderSmart();toast(`${smartPosts.length} posts generated!`)
+}catch(e){toast('Error: '+e.message,'err')}
+btn.innerHTML=orig;btn.disabled=false
+}
+function renderSmart(){
+const el=document.getElementById('smartList');if(!smartPosts.length){el.innerHTML='';return}
+el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin:1rem 0 .75rem"><h3>${smartPosts.length} Posts</h3><button class="btn btn-g" onclick="acceptSmart()">Accept All → Calendar</button></div>`+
+smartPosts.map(sp=>`<div class="post-card"><div class="post-body"><div class="post-meta">
+<span class="badge ${sp.platform==='Instagram'?'badge-ig':'badge-fb'}">${sp.platform}</span>
+<span class="post-date">${new Date(sp.scheduledFor).toLocaleDateString()} ${new Date(sp.scheduledFor).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+${sp.pillar?`<span class="badge" style="background:rgba(139,92,246,.2);color:var(--purple)">${sp.pillar}</span>`:''}
+</div><p class="post-text" style="-webkit-line-clamp:3">${esc(sp.content)}</p>
+<div class="post-tags">${(sp.hashtags||[]).map(t=>'<span class="post-tag">'+t+'</span>').join('')}</div>
+${sp.reasoning?`<p style="font-size:.7rem;color:var(--dim);font-style:italic;margin-top:4px">${esc(sp.reasoning)}</p>`:''}
+</div></div>`).join('')
+}
+function acceptSmart(){
+const np=smartPosts.map(sp=>({id:'sp_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),platform:sp.platform,content:sp.content,hashtags:sp.hashtags,scheduledFor:sp.scheduledFor,status:'Scheduled',imagePrompt:sp.imagePrompt,reasoning:sp.reasoning,pillar:sp.pillar,topic:sp.topic}));
+posts=[...np,...posts];savePosts();toast(`${np.length} posts added!`);smartPosts=[];document.getElementById('smartList').innerHTML='';document.getElementById('smartStrat').innerHTML=''
+}
+
+// ═══════════ INSIGHTS ═══════════
+async function handleAnalyze(){
+if(!hasKey()){toast('Set API key in Settings first','warn');return}
+const btn=event.target.closest('.btn'),orig=btn.innerHTML;btn.innerHTML='<span class="spin"></span> Analyzing...';btn.disabled=true;
+const p=getProf(),s=getStats();
+try{
+const[recs,times]=await Promise.all([
+gem(`You are a social media strategist for "${p.name}", a ${p.type}. Stats: Followers: ${s.followers}, Reach: ${s.reach}, Engagement: ${s.engagement}%, Posts: ${s.postsLast30Days}. Provide 3 specific, high-impact recommendations.`),
+gem(`Best times to post on Instagram and Facebook for a ${p.type} in ${p.loc}? Give 3 best time slots for the upcoming week.`)
+]);
+if(recs){document.getElementById('recCard').style.display='block';document.getElementById('recOut').textContent=recs}
+if(times){document.getElementById('timCard').style.display='block';document.getElementById('timOut').textContent=times}
+toast('Analysis complete!')
+}catch(e){toast('Error: '+e.message,'err')}
+btn.innerHTML=orig;btn.disabled=false
+}
+
+// ═══════════ DATA ═══════════
+function exportData(){
+const d=JSON.stringify({posts,profile:getProf(),stats:getStats(),content:JSON.parse(localStorage.getItem('wi3d_content')||'null'),categories:getCats()},null,2);
+const b=new Blob([d],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');
+a.href=u;a.download=`wi3d-export-${new Date().toISOString().split('T')[0]}.json`;a.click();URL.revokeObjectURL(u);toast('Exported!')
+}
+function importDataPrompt(){document.getElementById('importFile').click()}
+function importData(e){
+const f=e.target.files[0];if(!f)return;
+const r=new FileReader();r.onload=function(ev){
+try{
+const d=JSON.parse(ev.target.result);
+if(d.posts){posts=d.posts;savePosts()}
+if(d.content)localStorage.setItem('wi3d_content',JSON.stringify(d.content));
+if(d.categories)saveCats(d.categories);
+if(d.profile)localStorage.setItem('wi3d_profile',JSON.stringify(d.profile));
+toast('Data imported!');location.reload()
+}catch(err){toast('Invalid JSON file','err')}
+};r.readAsText(f)
+}
+function clearPosts(){if(!confirm('Delete all posts?'))return;posts=[];savePosts();toast('Cleared')}
+
+// ═══════════ DASHBOARD ═══════════
+function renderDash(){
+document.getElementById('dPosts').textContent=posts.length;
+document.getElementById('dSched').textContent=posts.filter(p=>p.status==='Scheduled').length;
+document.getElementById('dDraft').textContent=posts.filter(p=>p.status==='Draft').length;
+document.getElementById('dCats').textContent=getCats().length;
+const el=document.getElementById('dashRecent');
+const recent=posts.slice(0,3);
+if(!recent.length){el.innerHTML='<p style="color:var(--dim);font-size:.8rem">No posts yet.</p>';return}
+el.innerHTML=recent.map(p=>`<div class="post-card"><div class="post-body"><div class="post-meta">
+<span class="badge ${p.platform==='Instagram'?'badge-ig':'badge-fb'}">${p.platform}</span>
+<span class="badge badge-${p.status.toLowerCase()==='draft'?'draft':'sched'}">${p.status}</span>
+<span class="post-date">${new Date(p.scheduledFor).toLocaleDateString()}</span>
+</div><p class="post-text">${esc(p.content)}</p></div></div>`).join('')
+}
+
+// ═══════════ UTILS ═══════════
+function v(id){return document.getElementById(id)?.value||''}
+function sv(id,val){const el=document.getElementById(id);if(el)el.value=val}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+document.getElementById('schedDate')?.addEventListener('change',function(){document.getElementById('saveLabel').textContent=this.value?'Schedule':'Save Draft'});
+
+// ═══════════ INIT ═══════════
+checkAuth();updateStatus();loadProfile();loadContent();renderDash();renderFeatures();
+</script>
+</body>
+</html>

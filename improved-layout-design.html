@@ -395,6 +395,96 @@
             margin-bottom: 1rem;
         }
 
+        /* Contact Section */
+        .contact {
+            padding: 4rem 2rem;
+            background: var(--white);
+        }
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .contact-container p {
+            color: var(--medium-gray);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .contact-card {
+            background: var(--light-gray);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .contact-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px var(--shadow-light);
+        }
+        .contact-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .contact-card h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+        .contact-card p {
+            color: var(--medium-gray);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        /* Shop Banner */
+        .shop-banner {
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a1a2e 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .shop-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/Cosplay_1728514390.jpg') center/cover;
+            opacity: 0.15;
+        }
+        .shop-banner-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .shop-banner h2 {
+            color: var(--white);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .shop-banner p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 1.5rem;
+        }
+        .shop-banner .btn-primary {
+            font-size: 1.1rem;
+            padding: 1rem 2.5rem;
+        }
+
+        /* Category card as link */
+        a.category-card {
+            text-decoration: none;
+            color: inherit;
+        }
+
         /* Footer */
         footer {
             background: var(--primary-dark);
@@ -506,7 +596,7 @@
                 <li><a href="#categories">Categories</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li><a href="admin.html" style="background:linear-gradient(135deg,var(--secondary-pink),var(--accent-purple));color:#fff;padding:0.5rem 1rem;border-radius:8px;font-size:0.85rem;">Admin</a></li>
+                <li><a href="admin-panel.html" style="background:linear-gradient(135deg,var(--secondary-pink),var(--accent-purple));color:#fff;padding:0.5rem 1rem;border-radius:8px;font-size:0.85rem;">Admin</a></li>
             </ul>
             <div class="mobile-menu">
                 <span></span>
@@ -522,12 +612,20 @@
                 <h1>Bring Your Imagination to Life with 3D Printing</h1>
                 <p>Specializing in cosplay pieces, educational toys, and custom designs using eco-friendly PLA+ materials. Quality craftsmanship meets creative innovation.</p>
                 <div class="cta-buttons">
-                    <a href="#shop" class="btn btn-primary">🛍️ Shop Now</a>
+                    <a href="https://www.wildimaginations3d.com.au/" target="_blank" rel="noopener" class="btn btn-primary">🛍️ Shop Now</a>
                     <a href="#contact" class="btn btn-secondary">📧 Get in Touch</a>
                 </div>
             </div>
             <div class="hero-image">
                 <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/GroupAnn%20Image1%20V2_1728514393.jpg" alt="Wild Imaginations 3D Cosplay Creations">
+            </div>
+        </section>
+
+        <section class="shop-banner" id="shop">
+            <div class="shop-banner-inner">
+                <h2>Browse Our Collections</h2>
+                <p>From cosplay props to D&D miniatures, educational toys to hobby paints — explore our full range of 3D printed creations.</p>
+                <a href="https://www.wildimaginations3d.com.au/" target="_blank" rel="noopener" class="btn btn-primary">🛍️ Visit Our Store</a>
             </div>
         </section>
 
@@ -571,46 +669,66 @@
             <div class="categories-container">
                 <h2 class="section-title">Explore Our Categories</h2>
                 <div class="category-grid">
-                    <div class="category-card">
+                    <a href="https://www.wildimaginations3d.com.au/shop/cosplay/LE2QMXRZGWWQL4CLBE5FIL62" target="_blank" rel="noopener" class="category-card">
                         <div class="category-icon">🎭</div>
                         <h4>Cosplay</h4>
-                        <p>Props, accessories, and costume pieces</p>
-                    </div>
-                    <div class="category-card">
+                        <p>Helmets, swords, props & accessories</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/dungeons-dragons-mini-figs/RG5XGWYB7MX72RJ3UQY4VH7S" target="_blank" rel="noopener" class="category-card">
                         <div class="category-icon">🐉</div>
                         <h4>D&D Miniatures</h4>
-                        <p>Detailed figurines and terrain</p>
-                    </div>
-                    <div class="category-card">
+                        <p>Detailed figurines, busts & campaigns</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/educational-sensory/NLB6I5L7JUA7ESOCDY2QMJS5" target="_blank" rel="noopener" class="category-card">
                         <div class="category-icon">🧸</div>
-                        <h4>Educational Toys</h4>
-                        <p>Sensory play and learning tools</p>
-                    </div>
-                    <div class="category-card">
+                        <h4>Educational & Sensory</h4>
+                        <p>Sensory trays, packs & learning tools</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/sms-paints/Y6UHTXPRCCEYQ6JWAAOAHJVZ" target="_blank" rel="noopener" class="category-card">
                         <div class="category-icon">🎨</div>
-                        <h4>Hobby Supplies</h4>
-                        <p>Paints, tools, and accessories</p>
-                    </div>
-                    <div class="category-card">
-                        <div class="category-icon">⚔️</div>
-                        <h4>Weapons & Props</h4>
-                        <p>Replicas and detailed props</p>
-                    </div>
-                    <div class="category-card">
-                        <div class="category-icon">🎮</div>
-                        <h4>Gaming Accessories</h4>
-                        <p>Custom gaming items</p>
-                    </div>
-                    <div class="category-card">
+                        <h4>SMS Paints</h4>
+                        <p>Premium acrylic lacquers & hobby paints</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/pokemon/6CJNUK2NUKEGOLMFJ4VUHMUM" target="_blank" rel="noopener" class="category-card">
+                        <div class="category-icon">⚡</div>
+                        <h4>Pokemon</h4>
+                        <p>Pokeballs & Pokemon collectibles</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/battle-droids/EMBB2PN4UAZUP24JXM7QLN5X" target="_blank" rel="noopener" class="category-card">
+                        <div class="category-icon">🤖</div>
+                        <h4>Battle Droids</h4>
+                        <p>Detailed droid replicas</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/wargaming-terrain/WY2J3MISNGVNONHAGROZEN2P" target="_blank" rel="noopener" class="category-card">
                         <div class="category-icon">🏰</div>
                         <h4>Wargaming Terrain</h4>
                         <p>Battle-ready terrain pieces</p>
-                    </div>
-                    <div class="category-card">
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/printlings/O4F5LALMLD72JT762VT33NXG" target="_blank" rel="noopener" class="category-card">
                         <div class="category-icon">🦸</div>
                         <h4>Printlings</h4>
                         <p>Character collectibles</p>
-                    </div>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/fidgets/FEMPG5LCOEIAW53HWA7KP52T" target="_blank" rel="noopener" class="category-card">
+                        <div class="category-icon">🌀</div>
+                        <h4>Fidgets</h4>
+                        <p>Sensory fidget toys</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/ickysticky/OF5WCT7CAX36IGZ4G5W6MBY5" target="_blank" rel="noopener" class="category-card">
+                        <div class="category-icon">🧪</div>
+                        <h4>IckySticky</h4>
+                        <p>Fun sticky creations</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/hobby-paints-tools-accessories/YXQVGMT26BHGENEC5JWYJK2L" target="_blank" rel="noopener" class="category-card">
+                        <div class="category-icon">🖌️</div>
+                        <h4>Hobby Tools & Accessories</h4>
+                        <p>Brushes, primers & precision tools</p>
+                    </a>
+                    <a href="https://www.wildimaginations3d.com.au/shop/green-stuff-world/2HHIANDVI6YFMYZLRFPK7DQO" target="_blank" rel="noopener" class="category-card">
+                        <div class="category-icon">🌍</div>
+                        <h4>Green Stuff World</h4>
+                        <p>Modelling & terrain supplies</p>
+                    </a>
                 </div>
             </div>
         </section>
@@ -697,6 +815,29 @@
                 </div>
             </div>
         </section>
+        <section class="contact" id="contact">
+            <div class="contact-container">
+                <h2 class="section-title">Get In Touch</h2>
+                <p>Looking for a specific product, have suggestions for new designs, or need assistance? Our team is here to help!</p>
+                <div class="contact-grid">
+                    <a href="mailto:wildimaginations3dd@gmail.com" class="contact-card">
+                        <div class="icon">📧</div>
+                        <h4>Email Us</h4>
+                        <p>wildimaginations3dd@gmail.com</p>
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61559911828986" target="_blank" rel="noopener" class="contact-card">
+                        <div class="icon">📘</div>
+                        <h4>Facebook</h4>
+                        <p>Wild Imaginations 3D</p>
+                    </a>
+                    <a href="https://www.instagram.com/wildimaginations3d" target="_blank" rel="noopener" class="contact-card">
+                        <div class="icon">📷</div>
+                        <h4>Instagram</h4>
+                        <p>@wildimaginations3d</p>
+                    </a>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -705,42 +846,42 @@
                 <img src="https://fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6.cdn6.editmysite.com/uploads/b/fbc2d7f42bb521a016a7093fb143433fa0793dcba3c67e5e7c8fa03f5a6937a6/8.26.2024_66cbde82f08154.98464417.png" alt="Wild Imaginations 3D" class="footer-logo">
                 <h3>Shop</h3>
                 <ul>
-                    <li><a href="#">All Products</a></li>
-                    <li><a href="#">Cosplay Items</a></li>
-                    <li><a href="#">Educational Toys</a></li>
-                    <li><a href="#">D&D Miniatures</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/" target="_blank" rel="noopener">All Products</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/shop/cosplay/LE2QMXRZGWWQL4CLBE5FIL62" target="_blank" rel="noopener">Cosplay</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/shop/educational-sensory/NLB6I5L7JUA7ESOCDY2QMJS5" target="_blank" rel="noopener">Educational & Sensory</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/shop/dungeons-dragons-mini-figs/RG5XGWYB7MX72RJ3UQY4VH7S" target="_blank" rel="noopener">D&D Miniatures</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Categories</h3>
                 <ul>
-                    <li><a href="#">New Arrivals</a></li>
-                    <li><a href="#">Best Sellers</a></li>
-                    <li><a href="#">Custom Orders</a></li>
-                    <li><a href="#">Gift Ideas</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/shop/sms-paints/Y6UHTXPRCCEYQ6JWAAOAHJVZ" target="_blank" rel="noopener">SMS Paints</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/shop/printlings/O4F5LALMLD72JT762VT33NXG" target="_blank" rel="noopener">Printlings</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/shop/pokemon/6CJNUK2NUKEGOLMFJ4VUHMUM" target="_blank" rel="noopener">Pokemon</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/shop/hobby-paints-tools-accessories/YXQVGMT26BHGENEC5JWYJK2L" target="_blank" rel="noopener">Hobby Paints & Tools</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Support</h3>
                 <ul>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Shipping Info</a></li>
-                    <li><a href="#">Returns</a></li>
-                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/licensing" target="_blank" rel="noopener">Licensing</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/our-mission" target="_blank" rel="noopener">Our Mission</a></li>
+                    <li><a href="https://www.wildimaginations3d.com.au/about" target="_blank" rel="noopener">About</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Connect</h3>
                 <ul>
-                    <li><a href="https://www.facebook.com/profile.php?id=61559911828986" target="_blank">Facebook</a></li>
-                    <li><a href="https://www.instagram.com/wildimaginations3d" target="_blank">Instagram</a></li>
+                    <li><a href="https://www.facebook.com/profile.php?id=61559911828986" target="_blank" rel="noopener">Facebook</a></li>
+                    <li><a href="https://www.instagram.com/wildimaginations3d" target="_blank" rel="noopener">Instagram</a></li>
                     <li><a href="mailto:wildimaginations3dd@gmail.com">Email Us</a></li>
                     <li><a href="#">Newsletter</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Wild Imaginations 3D. All rights reserved. | Eco-friendly 3D printing solutions</p>
+            <p>&copy; 2025 Wild Imaginations 3D. All rights reserved. | Eco-friendly 3D printing in Australia</p>
         </div>
     </footer>
 
