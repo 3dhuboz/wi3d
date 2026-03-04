@@ -147,7 +147,55 @@ select option{background:#1a1a2e}
 .form-row{flex-direction:column}
 }
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#4b5563;border-radius:3px}
+
+/* Product Management */
+.prod-filters{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.prod-filters select{width:auto;min-width:160px}
+.prod-filters .prod-count{font-size:.75rem;color:var(--dim);margin-left:auto}
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem}
+.prod-item{background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;transition:border .2s}
+.prod-item:hover{border-color:var(--pink)}
+.prod-img{width:100%;height:130px;object-fit:cover;background:rgba(0,0,0,.2);display:block}
+.prod-img-placeholder{width:100%;height:130px;background:linear-gradient(135deg,var(--bg3),var(--bg4));display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--dim)}
+.prod-info{padding:.6rem}
+.prod-info h4{font-size:.8rem;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-info .prod-price{font-size:.85rem;font-weight:700;color:var(--pink-light)}
+.prod-info .prod-cat{font-size:.65rem;color:var(--dim);margin-top:2px}
+.prod-actions{position:absolute;top:6px;right:6px;display:flex;gap:3px}
+.prod-actions button{background:rgba(0,0,0,.6);border:none;color:#fff;width:24px;height:24px;border-radius:5px;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.prod-item:hover .prod-actions button{opacity:1}
+.prod-actions button:hover{background:var(--pink)}
+.prod-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+@media(max-width:768px){.prod-form-grid{grid-template-columns:1fr}}
+.img-preview{width:100%;max-width:200px;height:auto;border-radius:7px;border:1px solid var(--border);margin-top:.4rem}
+.quick-add-toggle{display:flex;gap:6px;margin-bottom:1rem}
+.quick-add-toggle button{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer;transition:all .15s;font-family:inherit}
+.quick-add-toggle button.active{border-color:var(--pink);color:var(--pink-light);background:rgba(238,37,188,.08)}
 </style>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js';
+import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAL3yYInIedHjRhjboc-k_R11OJLUGviQE",
+  authDomain: "wild-imaginations-3d.firebaseapp.com",
+  projectId: "wild-imaginations-3d",
+  storageBucket: "wild-imaginations-3d.firebasestorage.app",
+  messagingSenderId: "332868943014",
+  appId: "1:332868943014:web:7fb32c27505f21770e4867",
+  measurementId: "G-JYRNZ5HFKZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
+
+// Expose to global scope for the inline script
+window._fb = { db, doc, getDoc, setDoc, collection, getDocs };
+window._fbReady = true;
+window.dispatchEvent(new Event('fb-ready'));
+</script>
 </head>
 <body>
 
@@ -174,6 +222,7 @@ select option{background:#1a1a2e}
 <button class="active" data-p="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></button>
 <button data-p="content"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Site Content</span></button>
 <button data-p="cats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4"/><path d="M18 3h-4v18h4a2 2 0 002-2V5a2 2 0 00-2-2z"/></svg><span>Categories</span></button>
+<button data-p="products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg><span>Products</span></button>
 <div class="divider"></div>
 <button data-p="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4V2m0 2v2m0-2h2m-2 0h-2"/><path d="m14 7-5.5 5.5a2.1 2.1 0 1 0 3 3L17 10"/><path d="m14 7 3 3"/></svg><span>AI Create</span></button>
 <button data-p="calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Calendar</span></button>
@@ -276,6 +325,55 @@ select option{background:#1a1a2e}
 </div>
 <button class="btn btn-g" onclick="addCategory()">Add Category</button>
 </div>
+</div>
+</div>
+
+<!-- ═══ PRODUCTS ═══ -->
+<div class="panel" id="p-products">
+<div class="card">
+<h3>Product Management</h3>
+<p class="card-sub">Add and manage products for your shop. These sync to Firebase and display on the main site.</p>
+<div class="prod-filters">
+<select id="prodFilterCat" onchange="renderProducts()">
+<option value="">All Categories</option>
+</select>
+<input type="text" id="prodSearch" placeholder="Search products..." style="max-width:200px" oninput="renderProducts()">
+<span class="prod-count" id="prodCount">0 products</span>
+<button class="btn btn-p" onclick="showProductForm()" style="font-size:.75rem;padding:5px 14px">+ Add Product</button>
+</div>
+<div id="prodGrid" class="prod-grid"></div>
+</div>
+
+<div class="card" id="prodFormCard" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<h3 id="prodFormTitle">Add Product</h3>
+<button class="btn btn-o" onclick="hideProductForm()" style="font-size:.7rem;padding:4px 10px">Cancel</button>
+</div>
+<input type="hidden" id="prodEditId">
+<div class="prod-form-grid">
+<div class="form-group"><label>Product Name *</label><input id="prodName" placeholder="e.g., Baby Dragon Fidget"></div>
+<div class="form-group"><label>Price (AUD) *</label><input id="prodPrice" type="number" step="0.01" placeholder="12.95"></div>
+<div class="form-group"><label>Category *</label><select id="prodCat"></select></div>
+<div class="form-group"><label>Store Link</label><input id="prodLink" placeholder="https://www.wildimaginations3d.com.au/product/..."></div>
+<div class="form-group" style="grid-column:1/-1"><label>Image URL</label><input id="prodImg" placeholder="Paste image URL..." oninput="previewProdImg()"><img id="prodImgPreview" class="img-preview" style="display:none"></div>
+<div class="form-group" style="grid-column:1/-1"><label>Short Description</label><textarea id="prodDesc" placeholder="Brief product description..." style="min-height:50px"></textarea></div>
+</div>
+<div class="form-row" style="margin-top:.5rem">
+<label style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted);cursor:pointer"><input type="checkbox" id="prodFeatured"> Featured product (shows on homepage)</label>
+</div>
+<div class="btn-row" style="margin-top:.75rem">
+<button class="btn btn-g" onclick="saveProduct()">Save Product</button>
+<button class="btn btn-s" onclick="saveProduct(true)">Save & Add Another</button>
+</div>
+</div>
+
+<div class="card" id="prodBulkCard">
+<h3>Quick Add from Store</h3>
+<p class="card-sub">Paste product details from your Square Online dashboard to quickly add multiple items.</p>
+<div class="form-group"><label>Category for bulk items</label><select id="bulkCat"></select></div>
+<div class="form-group"><label>Paste items (one per line: Name | Price | Image URL | Store Link)</label>
+<textarea id="bulkItems" placeholder="Baby Dragon Fidget | 12.95 | https://image-url.jpg | https://store-link..." style="min-height:100px;font-family:monospace;font-size:.75rem"></textarea></div>
+<button class="btn btn-p" onclick="bulkAddProducts()">Add All Items</button>
 </div>
 </div>
 
@@ -427,10 +525,44 @@ const DEFAULT_CATS = [
 {icon:'🌍',name:'Green Stuff World',desc:'Modelling & terrain supplies',url:'https://www.wildimaginations3d.com.au/shop/green-stuff-world/2HHIANDVI6YFMYZLRFPK7DQO'}
 ];
 
+// ═══════════ FIREBASE HELPERS ═══════════
+// Write a document to Firestore (fire-and-forget with error logging)
+async function fbSet(path, data) {
+    try {
+        if (!window._fbReady) return;
+        const { db, doc, setDoc } = window._fb;
+        await setDoc(doc(db, 'admin', path), { data, updatedAt: new Date().toISOString() });
+    } catch (e) { console.warn('Firebase write error:', path, e.message); }
+}
+// Read a document from Firestore, returns null if not found
+async function fbGet(path) {
+    try {
+        if (!window._fbReady) return null;
+        const { db, doc, getDoc } = window._fb;
+        const snap = await getDoc(doc(db, 'admin', path));
+        return snap.exists() ? snap.data().data : null;
+    } catch (e) { console.warn('Firebase read error:', path, e.message); return null; }
+}
+// Sync a localStorage key to Firestore (both directions)
+async function fbSync(lsKey, fbPath) {
+    const remote = await fbGet(fbPath);
+    if (remote !== null) {
+        localStorage.setItem(lsKey, JSON.stringify(remote));
+        return remote;
+    }
+    // If nothing in Firestore yet, push local data up
+    const local = JSON.parse(localStorage.getItem(lsKey) || 'null');
+    if (local !== null) fbSet(fbPath, local);
+    return local;
+}
+
 // ═══════════ AUTH ═══════════
-function doLogin(){
+async function doLogin(){
 const pw=document.getElementById('loginPw').value;
-const stored=localStorage.getItem('wi3d_admin_pw')||'wi3d2025';
+// Check Firestore first, then localStorage
+let stored = localStorage.getItem('wi3d_admin_pw') || 'wi3d2025';
+const remotePw = await fbGet('password');
+if (remotePw) { stored = remotePw; localStorage.setItem('wi3d_admin_pw', remotePw); }
 if(pw===stored){localStorage.setItem('wi3d_auth','1');document.getElementById('loginOverlay').style.display='none'}
 else{document.getElementById('loginErr').textContent='Incorrect password'}
 }
@@ -439,7 +571,7 @@ function checkAuth(){if(localStorage.getItem('wi3d_auth')==='1')document.getElem
 function changePw(){
 const np=document.getElementById('newPw').value.trim();
 if(!np||np.length<4){toast('Password must be at least 4 characters','warn');return}
-localStorage.setItem('wi3d_admin_pw',np);document.getElementById('newPw').value='';toast('Password updated!')
+localStorage.setItem('wi3d_admin_pw',np);fbSet('password',np);document.getElementById('newPw').value='';toast('Password updated!')
 }
 
 // ═══════════ TOAST ═══════════
@@ -450,7 +582,7 @@ c.appendChild(el);setTimeout(()=>el.remove(),4000)
 }
 
 // ═══════════ NAV ═══════════
-const titles={dash:'Dashboard',content:'Site Content',cats:'Categories',create:'AI Create',calendar:'Content Calendar',smart:'Smart AI Scheduler',insights:'AI Insights',settings:'Settings'};
+const titles={dash:'Dashboard',content:'Site Content',cats:'Categories',products:'Products',create:'AI Create',calendar:'Content Calendar',smart:'Smart AI Scheduler',insights:'AI Insights',settings:'Settings'};
 document.querySelectorAll('.sidebar-nav button').forEach(b=>{
 b.addEventListener('click',()=>{go(b.dataset.p)})
 });
@@ -458,7 +590,7 @@ function go(p){
 document.querySelectorAll('.sidebar-nav button').forEach(b=>b.classList.toggle('active',b.dataset.p===p));
 document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id==='p-'+p));
 document.getElementById('pageTitle').textContent=titles[p]||p;
-if(p==='calendar')renderCal();if(p==='dash')renderDash();if(p==='cats')renderCats();if(p==='content')renderFeatures();
+if(p==='calendar')renderCal();if(p==='dash')renderDash();if(p==='cats')renderCats();if(p==='content')renderFeatures();if(p==='products')renderProducts();
 }
 
 // ═══════════ API ═══════════
@@ -467,7 +599,7 @@ function hasKey(){return !!getKey()}
 function saveKey(){
 const k=document.getElementById('apiKey').value.trim();
 if(!k){toast('Enter a key','warn');return}
-localStorage.setItem('wi3d_gemini_key',k);toast('API Key saved!');updateStatus()
+localStorage.setItem('wi3d_gemini_key',k);fbSet('gemini_key',k);toast('API Key saved!');updateStatus()
 }
 function updateStatus(){
 const d=document.getElementById('sDot'),t=document.getElementById('sTxt'),s=document.getElementById('keyStatus');
@@ -489,7 +621,7 @@ const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||''
 function getProf(){return{name:v('pName')||'Wild Imaginations 3D',type:v('pType')||'3D printing & design studio',loc:v('pLoc')||'Australia',tone:v('pTone')||'Friendly, creative, and passionate',desc:v('pDesc')||''}}
 function getStats(){return{followers:+v('stF')||500,reach:+v('stR')||2000,engagement:+v('stE')||4.5,postsLast30Days:+v('stP')||8}}
 function saveProfile(){
-localStorage.setItem('wi3d_profile',JSON.stringify(getProf()));toast('Profile saved!')
+const p=getProf();localStorage.setItem('wi3d_profile',JSON.stringify(p));fbSet('profile',p);toast('Profile saved!')
 }
 function loadProfile(){
 const p=JSON.parse(localStorage.getItem('wi3d_profile')||'null');
@@ -499,7 +631,7 @@ if(p){sv('pName',p.name);sv('pType',p.type);sv('pLoc',p.loc);sv('pTone',p.tone);
 // ═══════════ CONTENT EDITOR ═══════════
 function saveContent(){
 const c={hero:v('cHero'),sub:v('cSub'),heroImg:v('cHeroImg'),aboutTitle:v('cAboutTitle'),about1:v('cAbout1'),about2:v('cAbout2'),aboutImg:v('cAboutImg'),shopTitle:v('cShopTitle'),shopText:v('cShopText'),storeUrl:v('cStoreUrl'),features:getFeatures()};
-localStorage.setItem('wi3d_content',JSON.stringify(c));toast('Content saved!')
+localStorage.setItem('wi3d_content',JSON.stringify(c));fbSet('content',c);toast('Content saved!')
 }
 function loadContent(){
 const c=JSON.parse(localStorage.getItem('wi3d_content')||'null');
@@ -522,7 +654,7 @@ el.innerHTML=feats.map((f,i)=>`<div class="feat-row" style="border:1px solid var
 
 // ═══════════ CATEGORIES ═══════════
 function getCats(){return JSON.parse(localStorage.getItem('wi3d_cats')||'null')||DEFAULT_CATS}
-function saveCats(cats){localStorage.setItem('wi3d_cats',JSON.stringify(cats))}
+function saveCats(cats){localStorage.setItem('wi3d_cats',JSON.stringify(cats));fbSet('categories',cats)}
 function renderCats(){
 const cats=getCats(),el=document.getElementById('catList');
 document.getElementById('dCats').textContent=cats.length;
@@ -540,6 +672,107 @@ const cats=getCats();cats.push({icon:icon||'📦',name,desc,url});saveCats(cats)
 sv('newCatIcon','');sv('newCatName','');sv('newCatDesc','');sv('newCatUrl','');renderCats();toast('Category added!')
 }
 function delCat(i){const cats=getCats();cats.splice(i,1);saveCats(cats);renderCats();toast('Removed')}
+
+// ═══════════ PRODUCTS ═══════════
+let products = JSON.parse(localStorage.getItem('wi3d_products')||'[]');
+
+function getProducts(){return products}
+function saveProducts(){
+    localStorage.setItem('wi3d_products',JSON.stringify(products));
+    fbSet('products_catalog',products);
+}
+function populateCatDropdowns(){
+    const cats=getCats();
+    const opts=cats.map(c=>`<option value="${esc(c.name)}">${c.icon} ${esc(c.name)}</option>`).join('');
+    ['prodCat','bulkCat'].forEach(id=>{
+        const el=document.getElementById(id);if(el)el.innerHTML=opts;
+    });
+    const filter=document.getElementById('prodFilterCat');
+    if(filter)filter.innerHTML='<option value="">All Categories</option>'+opts;
+}
+function renderProducts(){
+    const filterCat=v('prodFilterCat');
+    const search=v('prodSearch').toLowerCase();
+    let filtered=products.filter(p=>{
+        if(filterCat&&p.category!==filterCat)return false;
+        if(search&&!p.name.toLowerCase().includes(search)&&!(p.description||'').toLowerCase().includes(search))return false;
+        return true;
+    });
+    document.getElementById('prodCount').textContent=filtered.length+' product'+(filtered.length!==1?'s':'')+(filterCat?' in '+filterCat:'');
+    const el=document.getElementById('prodGrid');
+    if(!filtered.length){
+        el.innerHTML='<div class="empty" style="grid-column:1/-1"><p>No products'+(filterCat?' in this category':'')+'. Click <strong>+ Add Product</strong> to get started.</p></div>';
+        return;
+    }
+    el.innerHTML=filtered.map(p=>`<div class="prod-item">
+        <div class="prod-actions">
+            <button onclick="editProduct('${p.id}')" title="Edit">✎</button>
+            <button onclick="delProduct('${p.id}')" title="Delete">✕</button>
+        </div>
+        ${p.image?`<img class="prod-img" src="${esc(p.image)}" alt="${esc(p.name)}" onerror="this.outerHTML='<div class=prod-img-placeholder>📦</div>'">`:'<div class="prod-img-placeholder">📦</div>'}
+        <div class="prod-info">
+            <h4 title="${esc(p.name)}">${esc(p.name)}</h4>
+            <div class="prod-price">$${Number(p.price).toFixed(2)}</div>
+            <div class="prod-cat">${esc(p.category||'Uncategorized')}${p.featured?' ⭐':''}</div>
+        </div>
+    </div>`).join('');
+}
+function showProductForm(editId){
+    document.getElementById('prodFormCard').style.display='block';
+    document.getElementById('prodFormTitle').textContent=editId?'Edit Product':'Add Product';
+    document.getElementById('prodEditId').value=editId||'';
+    populateCatDropdowns();
+    if(editId){
+        const p=products.find(x=>x.id===editId);
+        if(p){sv('prodName',p.name);sv('prodPrice',p.price);document.getElementById('prodCat').value=p.category||'';sv('prodLink',p.link||'');sv('prodImg',p.image||'');sv('prodDesc',p.description||'');document.getElementById('prodFeatured').checked=!!p.featured;previewProdImg()}
+    }else{clearProductForm()}
+    document.getElementById('prodFormCard').scrollIntoView({behavior:'smooth'});
+}
+function hideProductForm(){document.getElementById('prodFormCard').style.display='none';clearProductForm()}
+function clearProductForm(){
+    ['prodName','prodPrice','prodLink','prodImg','prodDesc'].forEach(id=>sv(id,''));
+    document.getElementById('prodFeatured').checked=false;
+    document.getElementById('prodEditId').value='';
+    document.getElementById('prodImgPreview').style.display='none';
+}
+function previewProdImg(){
+    const url=v('prodImg'),img=document.getElementById('prodImgPreview');
+    if(url){img.src=url;img.style.display='block';img.onerror=()=>{img.style.display='none'}}else{img.style.display='none'}
+}
+function saveProduct(addAnother){
+    const name=v('prodName').trim(),price=v('prodPrice'),cat=v('prodCat');
+    if(!name){toast('Product name is required','warn');return}
+    if(!price||isNaN(price)){toast('Valid price is required','warn');return}
+    if(!cat){toast('Select a category','warn');return}
+    const editId=document.getElementById('prodEditId').value;
+    const prod={id:editId||'prod_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),name,price:parseFloat(price),category:cat,link:v('prodLink').trim(),image:v('prodImg').trim(),description:v('prodDesc').trim(),featured:document.getElementById('prodFeatured').checked,updatedAt:new Date().toISOString()};
+    if(editId){
+        const idx=products.findIndex(p=>p.id===editId);
+        if(idx>=0)products[idx]=prod;else products.push(prod);
+    }else{products.push(prod)}
+    saveProducts();renderProducts();
+    toast(editId?'Product updated!':'Product added!');
+    if(addAnother){clearProductForm();document.getElementById('prodName').focus()}else{hideProductForm()}
+}
+function editProduct(id){showProductForm(id)}
+function delProduct(id){
+    if(!confirm('Delete this product?'))return;
+    products=products.filter(p=>p.id!==id);
+    saveProducts();renderProducts();toast('Product deleted');
+}
+function bulkAddProducts(){
+    const cat=v('bulkCat'),lines=v('bulkItems').trim();
+    if(!cat){toast('Select a category','warn');return}
+    if(!lines){toast('Paste product data','warn');return}
+    let count=0;
+    lines.split('\n').forEach(line=>{
+        const parts=line.split('|').map(s=>s.trim());
+        if(parts.length<1||!parts[0])return;
+        products.push({id:'prod_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name:parts[0],price:parseFloat(parts[1])||0,image:parts[2]||'',link:parts[3]||'',category:cat,description:'',featured:false,updatedAt:new Date().toISOString()});
+        count++;
+    });
+    if(count){saveProducts();renderProducts();sv('bulkItems','');toast(`${count} products added!`)}else{toast('No valid items found','warn')}
+}
 
 // ═══════════ AI CREATE ═══════════
 async function handleGen(){
@@ -598,7 +831,7 @@ ${p.hashtags?.length?'<div class="post-tags">'+p.hashtags.slice(0,5).map(t=>'<sp
 </div><button class="post-del" onclick="delPost('${p.id}')">✕</button></div>`).join('')
 }
 function delPost(id){posts=posts.filter(p=>p.id!==id);savePosts();renderCal();toast('Deleted')}
-function savePosts(){localStorage.setItem('wi3d_posts',JSON.stringify(posts));renderCal()}
+function savePosts(){localStorage.setItem('wi3d_posts',JSON.stringify(posts));fbSet('posts',posts);renderCal()}
 
 // ═══════════ SMART AI ═══════════
 async function handleSmart(){
@@ -654,7 +887,7 @@ btn.innerHTML=orig;btn.disabled=false
 
 // ═══════════ DATA ═══════════
 function exportData(){
-const d=JSON.stringify({posts,profile:getProf(),stats:getStats(),content:JSON.parse(localStorage.getItem('wi3d_content')||'null'),categories:getCats()},null,2);
+const d=JSON.stringify({posts,products,profile:getProf(),stats:getStats(),content:JSON.parse(localStorage.getItem('wi3d_content')||'null'),categories:getCats()},null,2);
 const b=new Blob([d],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');
 a.href=u;a.download=`wi3d-export-${new Date().toISOString().split('T')[0]}.json`;a.click();URL.revokeObjectURL(u);toast('Exported!')
 }
@@ -665,9 +898,10 @@ const r=new FileReader();r.onload=function(ev){
 try{
 const d=JSON.parse(ev.target.result);
 if(d.posts){posts=d.posts;savePosts()}
-if(d.content)localStorage.setItem('wi3d_content',JSON.stringify(d.content));
+if(d.products){products=d.products;saveProducts()}
+if(d.content){localStorage.setItem('wi3d_content',JSON.stringify(d.content));fbSet('content',d.content)}
 if(d.categories)saveCats(d.categories);
-if(d.profile)localStorage.setItem('wi3d_profile',JSON.stringify(d.profile));
+if(d.profile){localStorage.setItem('wi3d_profile',JSON.stringify(d.profile));fbSet('profile',d.profile)}
 toast('Data imported!');location.reload()
 }catch(err){toast('Invalid JSON file','err')}
 };r.readAsText(f)
@@ -696,8 +930,91 @@ function sv(id,val){const el=document.getElementById(id);if(el)el.value=val}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 document.getElementById('schedDate')?.addEventListener('change',function(){document.getElementById('saveLabel').textContent=this.value?'Schedule':'Save Draft'});
 
+// ═══════════ FIREBASE SYNC ON LOAD ═══════════
+async function syncFromFirebase() {
+    try {
+        // Sync posts
+        const remotePosts = await fbGet('posts');
+        if (remotePosts && Array.isArray(remotePosts)) {
+            posts = remotePosts;
+            localStorage.setItem('wi3d_posts', JSON.stringify(posts));
+        } else if (posts.length) {
+            fbSet('posts', posts);
+        }
+
+        // Sync content
+        const remoteContent = await fbGet('content');
+        if (remoteContent) {
+            localStorage.setItem('wi3d_content', JSON.stringify(remoteContent));
+            loadContent();
+        } else {
+            const lc = JSON.parse(localStorage.getItem('wi3d_content') || 'null');
+            if (lc) fbSet('content', lc);
+        }
+
+        // Sync categories
+        const remoteCats = await fbGet('categories');
+        if (remoteCats && Array.isArray(remoteCats)) {
+            localStorage.setItem('wi3d_cats', JSON.stringify(remoteCats));
+        } else {
+            const lCats = JSON.parse(localStorage.getItem('wi3d_cats') || 'null');
+            if (lCats) fbSet('categories', lCats);
+        }
+
+        // Sync profile
+        const remoteProfile = await fbGet('profile');
+        if (remoteProfile) {
+            localStorage.setItem('wi3d_profile', JSON.stringify(remoteProfile));
+            loadProfile();
+        } else {
+            const lp = JSON.parse(localStorage.getItem('wi3d_profile') || 'null');
+            if (lp) fbSet('profile', lp);
+        }
+
+        // Sync API key
+        const remoteKey = await fbGet('gemini_key');
+        if (remoteKey) {
+            localStorage.setItem('wi3d_gemini_key', remoteKey);
+            updateStatus();
+        } else {
+            const lk = localStorage.getItem('wi3d_gemini_key');
+            if (lk) fbSet('gemini_key', lk);
+        }
+
+        // Sync password
+        const remotePw = await fbGet('password');
+        if (remotePw) {
+            localStorage.setItem('wi3d_admin_pw', remotePw);
+        } else {
+            const lPw = localStorage.getItem('wi3d_admin_pw');
+            if (lPw && lPw !== 'wi3d2025') fbSet('password', lPw);
+        }
+
+        // Sync products
+        const remoteProducts = await fbGet('products_catalog');
+        if (remoteProducts && Array.isArray(remoteProducts)) {
+            products = remoteProducts;
+            localStorage.setItem('wi3d_products', JSON.stringify(products));
+        } else if (products.length) {
+            fbSet('products_catalog', products);
+        }
+
+        // Re-render everything with fresh data
+        renderDash();
+        renderFeatures();
+        populateCatDropdowns();
+        console.log('✅ Firebase sync complete');
+    } catch (e) {
+        console.warn('Firebase sync error:', e.message);
+    }
+}
+
 // ═══════════ INIT ═══════════
-checkAuth();updateStatus();loadProfile();loadContent();renderDash();renderFeatures();
+checkAuth();updateStatus();loadProfile();loadContent();renderDash();renderFeatures();populateCatDropdowns();
+
+// When Firebase module loads, sync cloud data
+if (window._fbReady) { syncFromFirebase(); }
+else { window.addEventListener('fb-ready', () => syncFromFirebase()); }
 </script>
 </body>
 </html>
